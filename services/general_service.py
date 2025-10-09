@@ -3,7 +3,7 @@
 from utils.decorator import safe_run
 from utils.datatime import get_mentioning_day
 from utils.respons import success_response
-from utils.media import file_id_to_bynery
+from utils.media import file_id_to_bynery , get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
 from models import audio_model
@@ -64,3 +64,20 @@ class GeneralService:
             f"ذکر روز {day['zekr']}"
         )
         await self.send_photo_with_text(day["path"], text)
+
+    @safe_run
+    async def send_message_to_channel(self , message, bot):
+        if x := await get_media_bytes(message, bot):
+            bin_file, typefile = x
+            if typefile == "photo":
+                await bale_bot.send_photo(bale_channel_id, bin_file, message.caption)
+            elif typefile == "video":
+                await bale_bot.send_video(bale_channel_id, bin_file, message.caption)
+            elif typefile == "audio":
+                await bale_bot.send_audio(bale_channel_id, bin_file, message.caption)
+            await eitaa_bot.send_file(eitaa_channel_id, bin_file, message.caption)
+            return success_response("پیام ارسال شد")
+        else:
+            text = message.text or message.caption
+            await self.send_text_message(text)
+            return success_response("پیام ارسال شد")
