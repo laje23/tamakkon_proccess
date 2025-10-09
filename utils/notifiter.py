@@ -1,6 +1,6 @@
 # utils/notifier.py
 
-async def send_to_debugger(result, admin_gruap_id , bot, success=False ):
+async def send_for_amins(result, admin_gruap_id , bot, success=False ):
     target = admin_gruap_id
     message = (
         result.get("message", "پیام نامشخص")
