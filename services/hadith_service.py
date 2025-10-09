@@ -4,7 +4,6 @@ from .base_service import BaseService
 from utils.respons import success_response, error_response
 from utils.message_prosseccing import process_hadith_message
 from models import hadith_model as db_hadith
-from config.channels import bale_channel_id , eitaa_channel_id
 
 
 class HadithService(BaseService):
@@ -13,8 +12,7 @@ class HadithService(BaseService):
         سرویس مدیریت ارسال حدیث‌ها
         """
         super().__init__(db_model=db_hadith, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
-        self.bale_channel_id = bale_channel_id
-        self.eitaa_channel_id = eitaa_channel_id
+
 
     async def auto_send(self):
         """

@@ -2,13 +2,15 @@
 
 from utils.decorator import safe_run
 from utils.respons import success_response
-
+from config.channels import bale_channel_id , eitaa_channel_id
 
 class BaseService:
     def __init__(self, db_model, bale_bot, eitaa_bot):
         self.db = db_model
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
+        self.bale_channel_id = bale_channel_id
+        self.eitaa_channel_id = eitaa_channel_id
 
     @safe_run
     async def send_text(self, text_bale, text_eitaa):
