@@ -1,0 +1,7 @@
+jdatetime
+balethon
+python-dotenv
+schedule
+psycopg2-binary
+pymongo
+pytz

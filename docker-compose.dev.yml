@@ -1,0 +1,24 @@
+
+services:
+  tamakkon_bot:
+    build:
+      context: .
+    image: tamakkon_bot:dev
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    ports:
+      - "${PGPORT_DEV}:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+
+volumes:
+  pgdata_dev:
