@@ -7,7 +7,6 @@ from utils.media import file_id_to_bynery
 from models import lecture_model
 
 
-
 class LectureService(BaseService):
     def __init__(self, bale_bot, eitaa_bot):
         """

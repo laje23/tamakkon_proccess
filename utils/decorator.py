@@ -1,5 +1,5 @@
 import functools
-from utils import error_response , send_to_admins
+from utils import error_response, send_to_admins
 from config import bale_bot, debugger_id
 import asyncio
 
@@ -12,6 +12,7 @@ def safe_run(func):
     2. پاسخ استاندارد خطا بازگردانده می‌شود.
     """
     if asyncio.iscoroutinefunction(func):
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             try:
@@ -19,12 +20,14 @@ def safe_run(func):
             except Exception as e:
                 post = error_response(f"❌ Error in {func.__name__}", e)
                 await send_to_admins(
-                    f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}" , 
+                    f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}",
                     debugger_id,
-                    bale_bot
+                    bale_bot,
                 )
                 return post
+
     else:
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             try:
@@ -32,10 +35,10 @@ def safe_run(func):
             except Exception as e:
                 post = error_response(f"❌ Error in {func.__name__}", e)
                 await send_to_admins(
-                f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}" , 
-                debugger_id,
-                bale_bot
-            )
+                    f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}",
+                    debugger_id,
+                    bale_bot,
+                )
                 return post
 
     return wrapper

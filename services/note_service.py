@@ -1,12 +1,16 @@
 from services.base_service import BaseService
 from utils.decorator import safe_run
 from utils.respons import success_response
-from models import notes_model  # فرض می‌کنیم notes_model شامل توابع و کلاس‌های NoteTableManager و TextPartManager باشد
-from utils.text_utils import prepare_processed_messages , fa_to_en_int
-from utils.media import  file_id_to_bynery 
-from utils.keyboard import back_menu 
+from models import (
+    notes_model,
+)  # فرض می‌کنیم notes_model شامل توابع و کلاس‌های NoteTableManager و TextPartManager باشد
+from utils.text_utils import prepare_processed_messages, fa_to_en_int
+from utils.media import file_id_to_bynery
+from utils.keyboard import back_menu
+
+
 class NoteService(BaseService):
-    def __init__(self, user_temp_data ,bale_bot, eitaa_bot):
+    def __init__(self, user_temp_data, bale_bot, eitaa_bot):
         """
         سرویس مدیریت ارسال یادداشت‌ها
         """
@@ -28,8 +32,6 @@ class NoteService(BaseService):
             "invalid_media_response": "لطفاً فایل بفرست یا بنویس 'ندارم'.",
         }
         self.user_temp_data = user_temp_data
-
-
 
     @safe_run
     async def auto_send(self):
@@ -56,11 +58,17 @@ class NoteService(BaseService):
             file = await file_id_to_bynery(file_id, self.bale_bot)
 
             if media_type == "photo":
-                await self.bale_bot.send_photo(self.bale_channel_id, file.read(), messages[0])
+                await self.bale_bot.send_photo(
+                    self.bale_channel_id, file.read(), messages[0]
+                )
             elif media_type == "video":
-                await self.bale_bot.send_video(self.bale_channel_id, file.read(), messages[0])
+                await self.bale_bot.send_video(
+                    self.bale_channel_id, file.read(), messages[0]
+                )
             elif media_type == "audio":
-                await self.bale_bot.send_audio(self.bale_channel_id, file.read(), messages[0])
+                await self.bale_bot.send_audio(
+                    self.bale_channel_id, file.read(), messages[0]
+                )
 
             await self.eitaa_bot.send_file(self.eitaa_channel_id, file, messages[0])
             messages.pop(0)
@@ -73,13 +81,13 @@ class NoteService(BaseService):
         # علامت‌گذاری یادداشت به عنوان ارسال شده
         self.db.mark_sent(text_id)
         return success_response("یادداشت ارسال شد")
-    
-    @safe_run 
-    async def first_step_save(self , message):
+
+    @safe_run
+    async def first_step_save(self, message):
         note_number = fa_to_en_int(message.text)
         if note_number <= 0:
             await self.bale_bot.send_message(
-                message.chat.id,self.MESSAGES["invalid_number"] , back_menu()
+                message.chat.id, self.MESSAGES["invalid_number"], back_menu()
             )
             return
 
@@ -102,9 +110,8 @@ class NoteService(BaseService):
         message.author.set_state("ASK_MEDIA")
         await self.bale_bot.send_message(message.chat.id, self.MESSAGES["ask_media"])
 
-
     @safe_run
-    async def handle_media_step(self ,message):
+    async def handle_media_step(self, message):
         user_id = message.author.id
         state = message.author.get_state()
 
@@ -114,13 +121,17 @@ class NoteService(BaseService):
         if message.photo:
             self.user_temp_data[user_id]["media_type"] = "photo"
             self.user_temp_data[user_id]["media_file_id"] = message.photo[-1].id
-            await self.bale_bot.send_message(message.chat.id, self.MESSAGES["media_received"])
+            await self.bale_bot.send_message(
+                message.chat.id, self.MESSAGES["media_received"]
+            )
             message.author.set_state("INPUT_TEXT_NOTE")
 
         elif message.video:
             self.user_temp_data[user_id]["media_type"] = "video"
             self.user_temp_data[user_id]["media_file_id"] = message.video.id
-            await self.bale_bot.send_message(message.chat.id, self.MESSAGES["media_received"])
+            await self.bale_bot.send_message(
+                message.chat.id, self.MESSAGES["media_received"]
+            )
             message.author.set_state("INPUT_TEXT_NOTE")
 
         elif message.text and message.text.strip().lower() == "ندارم":
@@ -128,12 +139,12 @@ class NoteService(BaseService):
             message.author.set_state("INPUT_TEXT_NOTE")
 
         else:
-            await self.bale_bot.send_message(message.chat.id, self.MESSAGES["invalid_media_response"])
-
-
+            await self.bale_bot.send_message(
+                message.chat.id, self.MESSAGES["invalid_media_response"]
+            )
 
     @safe_run
-    async def handle_text_parts(self,message):
+    async def handle_text_parts(self, message):
         user_id = message.author.id
         state = message.author.get_state()
 
@@ -153,18 +164,21 @@ class NoteService(BaseService):
         # زیاد کردن شمارنده برای دفعه بعد
         self.user_temp_data[user_id]["part_index"] += 1
 
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["ask_more_text"])
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["ask_more_text"]
+        )
         message.author.set_state("CONFIRM_MORE_TEXT")
-        
-        
+
     @safe_run
-    async def confirm_more_text(self , message):
+    async def confirm_more_text(self, message):
         user_id = message.author.id
         answer = message.text.strip().lower()
 
         if answer == "بله":
             message.author.set_state("INPUT_TEXT_NOTE")
-            await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_note_text"])
+            await self.bale_bot.send_message(
+                message.chat.id, self.MESSAGES["enter_note_text"]
+            )
 
         elif answer == "خیر":
             # به‌روزرسانی اطلاعات مدیا تو جدول مادر (اگر بود)
@@ -181,4 +195,6 @@ class NoteService(BaseService):
             message.author.del_state()
 
         else:
-            await self.bale_bot.send_message(message.chat.id, self.MESSAGES["invalid_answer"])
+            await self.bale_bot.send_message(
+                message.chat.id, self.MESSAGES["invalid_answer"]
+            )

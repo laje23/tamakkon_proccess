@@ -13,7 +13,6 @@ class HadithService(BaseService):
         """
         super().__init__(db_model=db_hadith, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
 
-
     async def auto_send(self):
         """
         ارسال خودکار حدیث به کانال‌های بله و ایتا

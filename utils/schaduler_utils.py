@@ -8,6 +8,7 @@ def get_schaduler_state():
         data = json.load(f)
     return data.get("schaduler_state", False)
 
+
 def set_schaduler_state(value: bool):
     with open(STATE_FILE, "r") as f:
         data = json.load(f)

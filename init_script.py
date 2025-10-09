@@ -1,5 +1,13 @@
-from models import audio_model, books_model, clips_model, hadith_model, lecture_model, notes_model
-from config import eitaa_bot, eitaa_channel_id_test
+from models import (
+    audio_model,
+    books_model,
+    clips_model,
+    hadith_model,
+    lecture_model,
+    notes_model,
+)
+from config.channels import eitaa_channel_id_test
+from config.bots import eitaa_bot
 import asyncio
 
 

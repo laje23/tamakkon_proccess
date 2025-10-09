@@ -1,11 +1,13 @@
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
 from models import audio as db_audios
 
+
 def main_menu(is_admin: bool):
     rows = [[InlineKeyboardButton("در حال بروزرسانی", "in_update")]]
     if is_admin:
         rows.append([InlineKeyboardButton("مدیریت پیام‌ها", "back_to_message")])
     return InlineKeyboard(*rows)
+
 
 def message_menu():
     return InlineKeyboard(
@@ -17,6 +19,7 @@ def message_menu():
         [InlineKeyboardButton("بازگشت", "back_to_main")],
     )
 
+
 def audios_menu():
     rows = db_audios.get_all_audios()
     keyboards = []
@@ -27,9 +30,16 @@ def audios_menu():
             keyboards.append([button])
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
     else:
-        keyboards.append([InlineKeyboardButton("جدول خالیست ایجاد مقادیر اولیه", "create_default_audios_row")])
+        keyboards.append(
+            [
+                InlineKeyboardButton(
+                    "جدول خالیست ایجاد مقادیر اولیه", "create_default_audios_row"
+                )
+            ]
+        )
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
     return InlineKeyboard(*keyboards)
+
 
 def note_menu():
     return InlineKeyboard(
@@ -37,6 +47,7 @@ def note_menu():
         [InlineKeyboardButton("ویرایش", "edit_note")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
+
 
 def schaduler_menu(on: bool):
     rows = []
@@ -47,12 +58,14 @@ def schaduler_menu(on: bool):
     rows.append([InlineKeyboardButton("بازگشت", "back_to_message")])
     return InlineKeyboard(*rows)
 
+
 def book_menu():
     return InlineKeyboard(
         [InlineKeyboardButton("کتاب جدید", "save_book")],
         [InlineKeyboardButton("ویرایش", "edit_book")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
+
 
 def save_or_edit_menu():
     return InlineKeyboard(
@@ -61,6 +74,7 @@ def save_or_edit_menu():
         [InlineKeyboardButton("کلیپ", "clip_menu")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
+
 
 def send_menu():
     return InlineKeyboard(
@@ -73,11 +87,13 @@ def send_menu():
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
 
+
 def answer_y_n(id):
     return InlineKeyboard(
         [InlineKeyboardButton("بله", f"resend:{id}")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
+
 
 def edit_note_menu():
     return InlineKeyboard(
@@ -85,7 +101,6 @@ def edit_note_menu():
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
 
+
 def back_menu():
-    return InlineKeyboard(
-        [InlineKeyboardButton("بازگشت", "back_to_message")]
-    )
+    return InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_message")])

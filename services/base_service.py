@@ -2,7 +2,8 @@
 
 from utils.decorator import safe_run
 from utils.respons import success_response
-from config.channels import bale_channel_id , eitaa_channel_id
+from config.channels import bale_channel_id, eitaa_channel_id
+
 
 class BaseService:
     def __init__(self, db_model, bale_bot, eitaa_bot):
@@ -32,5 +33,5 @@ class BaseService:
             await self.bale_bot.send_audio(self.bale_channel_id, file_id, caption)
             await self.eitaa_bot.send_file(self.eitaa_channel_id, file_id, caption)
         else:
-            raise Exception('فرمت فایل نا معتبر')
+            raise Exception("فرمت فایل نا معتبر")
         return success_response(f"{media_type} ارسال شد")

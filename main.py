@@ -1,14 +1,14 @@
 from balethon.conditions import command, group, at_state, private, all
-from models import lecture_model , hadith_model
+from models import lecture_model, hadith_model
 from config.bots import bale_bot
 from config.admins import admins
 from utils.notifiter import send_to_admins
-from config.channels import group_reserch_hadith_id , group_reserch_lecture_id
+from config.channels import group_reserch_hadith_id, group_reserch_lecture_id
 from utils.keyboard import *
 from utils.respons import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from services import note_services ,  general_services , book_services , clip_services
+from services import note_services, general_services, book_services, clip_services
 import threading
 import callback_handler as call
 import asyncio

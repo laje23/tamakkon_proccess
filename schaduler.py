@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from utils.schaduler_utils import get_schaduler_state 
+from utils.schaduler_utils import get_schaduler_state
 from utils.notifiter import send_to_admins
 from pytz import timezone
 from services import *

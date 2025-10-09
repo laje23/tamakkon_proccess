@@ -3,12 +3,12 @@
 from services.base_service import BaseService
 from utils.respons import success_response, error_response
 from utils.decorator import safe_run
-from models import books_model 
+from models import books_model
 from utils.keyboard import back_menu
 
 
 class BookService(BaseService):
-    def __init__(self , user_temp_data , bale_bot, eitaa_bot):
+    def __init__(self, user_temp_data, bale_bot, eitaa_bot):
         """
         سرویس مدیریت ارسال کتاب‌ها
         """
@@ -32,8 +32,7 @@ class BookService(BaseService):
             "only_number": "لطفاً فقط عدد وارد کن.",
         }
         self.user_temp_data = user_temp_data
-        
-        
+
     @safe_run
     async def auto_send(self):
         """
@@ -62,31 +61,34 @@ class BookService(BaseService):
 
         return success_response(f"کتاب '{book['title']}' ارسال شد")
 
-
     @safe_run
-    async def input_book_title(self ,message):
+    async def input_book_title(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id] = {"title": message.text.strip()}
         message.author.set_state("INPUT_BOOK_AUTHOR")
         await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_author"])
 
     @safe_run
-    async def input_book_author(self,message):
+    async def input_book_author(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id]["author"] = message.text.strip()
         message.author.set_state("INPUT_BOOK_PUBLISHER")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_publisher"])
-        
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_publisher"]
+        )
+
     @safe_run
-    async def input_book_publisher(self,message):
+    async def input_book_publisher(self, message):
         user_id = message.author.id
         publisher = None if message.text.strip() == "ندارم" else message.text.strip()
         self.user_temp_data[user_id]["publisher"] = publisher
         message.author.set_state("INPUT_BOOK_EXCERPT")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_excerpt"])
-        
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_excerpt"]
+        )
+
     @safe_run
-    async def input_book_excerpt(self,message):
+    async def input_book_excerpt(self, message):
         user_id = message.author.id
         excerpt = None if message.text.strip() == "ندارم" else message.text.strip()
         data = self.user_temp_data.get(user_id, {})
@@ -136,32 +138,40 @@ class BookService(BaseService):
 
         self.user_temp_data[message.author.id] = {"edit_book_id": book_id}
         message.author.set_state("EDIT_BOOK_TITLE")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_new_title"])
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_new_title"]
+        )
 
     @safe_run
-    async def input_new_title(self,message):
+    async def input_new_title(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id]["title"] = message.text.strip()
         message.author.set_state("EDIT_BOOK_AUTHOR")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_new_author"])
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_new_author"]
+        )
 
     @safe_run
-    async def input_new_author(self ,message):
+    async def input_new_author(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id]["author"] = message.text.strip()
         message.author.set_state("EDIT_BOOK_PUBLISHER")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_new_publisher"])
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_new_publisher"]
+        )
 
     @safe_run
-    async def input_new_publisher(self,message):
+    async def input_new_publisher(self, message):
         user_id = message.author.id
         publisher = None if message.text.strip() == "ندارم" else message.text.strip()
         self.user_temp_data[user_id]["publisher"] = publisher
         message.author.set_state("EDIT_BOOK_EXCERPT")
-        await self.bale_bot.send_message(message.chat.id, self.MESSAGES["enter_new_excerpt"])
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["enter_new_excerpt"]
+        )
 
     @safe_run
-    async def input_new_excerpt(self,message):
+    async def input_new_excerpt(self, message):
         user_id = message.author.id
         excerpt = None if message.text.strip() == "ندارم" else message.text.strip()
         data = self.user_temp_data.get(user_id, {})
@@ -180,7 +190,9 @@ class BookService(BaseService):
             )
         except Exception as e:
             await self.bale_bot.send_message(
-                message.chat.id, f"{self.MESSAGES['book_edit_error']}{str(e)}", back_menu()
+                message.chat.id,
+                f"{self.MESSAGES['book_edit_error']}{str(e)}",
+                back_menu(),
             )
 
         self.user_temp_data.pop(user_id, None)

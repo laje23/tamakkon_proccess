@@ -1,11 +1,13 @@
 # utils/media.py
 import io
 
+
 async def file_id_to_bynery(file_id, bot):
     content = await bot.download(file_id)
     bio = io.BytesIO(content)
     bio.seek(0)
     return bio
+
 
 async def get_media_bytes(message, bot):
     file_id = None
