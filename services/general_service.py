@@ -7,15 +7,16 @@ from utils.media import file_id_to_bynery , get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
 from models import audio_model
+from utils.keyboard import back_menu
 import asyncio
 
 
 class GeneralService:
-    def __init__(self, bale_bot= bale_bot, eitaa_bot=eitaa_bot , audio_model = audio_model):
+    def __init__(self, user_temp_data ,bale_bot= bale_bot, eitaa_bot=eitaa_bot , audio_model = audio_model):
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
         self.audio_model = audio_model
-
+        self.user_temp_data = user_temp_data
     @safe_run
     async def send_audio_file(self, file_id, caption=None):
         bin_file = await file_id_to_bynery(file_id, self.bale_bot)
@@ -81,3 +82,24 @@ class GeneralService:
             text = message.text or message.caption
             await self.send_text_message(text)
             return success_response("پیام ارسال شد")
+    
+    @safe_run
+    async def save_new_audio(self,message):
+        id = self.user_temp_data[message.author.id]["audio_id"]
+        if id:
+            if message.document:
+                file_id = message.document.id
+                caption = message.caption or ""
+                self.audio_model.update_row_by_id(id, file_id, caption)
+                await bale_bot.send_message(
+                    message.chat.id, "با موفقیت تغییر کرد ", back_menu()
+                )
+                message.author.del_state()
+            else:
+                await bale_bot.send_message(
+                    message.chat.id, "فرمت ارسال شده نامعتبر است", back_menu()
+                )
+        else:
+            await bale_bot.send_message(
+                message.chat.id, "مشکلی در دریافت ایدی بود ", back_menu()
+            )
