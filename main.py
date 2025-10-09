@@ -8,7 +8,7 @@ from utils.keyboard import *
 from utils.respons import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from services import note_services ,  general_services
+from services import note_services ,  general_services , book_services
 import threading
 import callback_handler as call
 import asyncio
@@ -77,47 +77,47 @@ async def send_to_channel(message):
 
 @bale_bot.on_message(at_state("INPUT_BOOK_TITLE"))
 async def handle_book_title(message):
-    await input_book_title(message)
+    await book_services.input_book_title(message)
 
 
 @bale_bot.on_message(at_state("INPUT_BOOK_AUTHOR"))
 async def handle_book_author(message):
-    await input_book_author(message)
+    await book_services.input_book_author(message)
 
 
 @bale_bot.on_message(at_state("INPUT_BOOK_PUBLISHER"))
 async def handle_book_publisher(message):
-    await input_book_publisher(message)
+    await book_services.input_book_publisher(message)
 
 
 @bale_bot.on_message(at_state("INPUT_BOOK_EXCERPT"))
 async def handle_book_excerpt(message):
-    await input_book_excerpt(message)
+    await book_services.input_book_excerpt(message)
 
 
 @bale_bot.on_message(at_state("EDIT_BOOK_ID"))
 async def handle_book_id_edit(message):
-    await input_book_id_for_edit(message)
+    await book_services.input_book_id_for_edit(message)
 
 
 @bale_bot.on_message(at_state("EDIT_BOOK_TITLE"))
 async def handle_book_title_edit(message):
-    await input_new_title(message)
+    await book_services.input_new_title(message)
 
 
 @bale_bot.on_message(at_state("EDIT_BOOK_AUTHOR"))
 async def handle_book_author_edit(message):
-    await input_new_author(message)
+    await book_services.input_new_author(message)
 
 
 @bale_bot.on_message(at_state("EDIT_BOOK_PUBLISHER"))
 async def handle_book_publisher_edit(message):
-    await input_new_publisher(message)
+    await book_services.input_new_publisher(message)
 
 
 @bale_bot.on_message(at_state("EDIT_BOOK_EXCERPT"))
 async def handle_book_excerpt_edit(message):
-    await input_new_excerpt(message)
+    await book_services.input_new_excerpt(message)
 
 
 @bale_bot.on_message(at_state("INPUT_NEW_CLIP"))
