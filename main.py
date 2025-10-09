@@ -2,13 +2,13 @@ from balethon.conditions import command, group, at_state, private, all
 from models import lecture_model , hadith_model
 from config.bots import bale_bot
 from config.admins import admins
-from utils.notifiter import send_for_amins
+from utils.notifiter import send_to_admins
 from config.channels import group_reserch_hadith_id , group_reserch_lecture_id
 from utils.keyboard import *
 from utils.respons import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from services import note_services ,  general_services , book_services
+from services import note_services ,  general_services , book_services , clip_services
 import threading
 import callback_handler as call
 import asyncio
@@ -122,22 +122,22 @@ async def handle_book_excerpt_edit(message):
 
 @bale_bot.on_message(at_state("INPUT_NEW_CLIP"))
 async def _(message):
-    await handle_new_clip(message)
+    await clip_services.handle_new_clip(message)
 
 
 @bale_bot.on_message(at_state("INPUT_CLIP_CAPTION"))
 async def _(message):
-    await handle_clip_caption(message)
+    await clip_services.handle_clip_caption(message)
 
 
 @bale_bot.on_message(at_state("EDIT_CLIP_CAPTION"))
 async def _(message):
-    await handle_edit_caption(message)
+    await clip_services.handle_edit_caption(message)
 
 
 @bale_bot.on_message(at_state("INPUT_AUDIO_FILE"))
 async def _(message):
-    await save_new_audio(message)
+    await clip_services.save_new_audio(message)
 
 
 # 📥 دریافت پیام‌های گروهی
@@ -151,12 +151,12 @@ async def collect_group_input(message):
             if message.document:
                 lecture_model.save_lecture(message.document.id, message.caption)
             else:
-                await send_for_amins(
+                await send_to_admins(
                     error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")
                 )
 
     except Exception as e:
-        await send_for_amins(e)
+        await send_to_admins(e)
 
 
 def start_scheduler_loop():

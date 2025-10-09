@@ -1,5 +1,5 @@
 import functools
-from utils import error_response , send_for_amins
+from utils import error_response , send_to_admins
 from config import bale_bot, debugger_id
 import asyncio
 
@@ -18,7 +18,7 @@ def safe_run(func):
                 return await func(*args, **kwargs)
             except Exception as e:
                 post = error_response(f"❌ Error in {func.__name__}", e)
-                await send_for_amins(
+                await send_to_admins(
                     f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}" , 
                     debugger_id,
                     bale_bot
@@ -31,7 +31,7 @@ def safe_run(func):
                 return func(*args, **kwargs)
             except Exception as e:
                 post = error_response(f"❌ Error in {func.__name__}", e)
-                await send_for_amins(
+                await send_to_admins(
                 f"🚨 خطا در تابع `{func.__name__}`\n\n{str(e)}" , 
                 debugger_id,
                 bale_bot

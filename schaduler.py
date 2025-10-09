@@ -1,17 +1,9 @@
 import asyncio
 from datetime import datetime
+from utils.schaduler_utils import get_schaduler_state 
+from utils.notifiter import send_to_admins
 from pytz import timezone
-from utils import get_schaduler_state
-from send_message_handler import (
-    send_prayer,
-    send_day_info,
-    auto_send_hadith,
-    send_auto_clip,
-    send_auto_book,
-    auto_send_not,
-    send_auto_lecture,  
-    send_to_debugger,
-)
+from services import *
 
 
 async def scheduled_messages():
@@ -25,38 +17,38 @@ async def scheduled_messages():
             if current_time not in sent_today:
                 try:
                     if current_time == "06:00":
-                        await send_prayer("ahd")
+                        await general_services.send_prayer("ahd")
 
                     elif current_time == "07:47":
-                        await send_day_info()
+                        await general_services.send_day_info()
 
                     elif current_time == "09:34":
-                        await auto_send_hadith()
+                        await hadith_services.auto_send()
 
                     elif current_time == "11:21":
-                        await send_auto_clip()
+                        await clip_services.auto_send()
 
                     elif current_time == "13:08":
-                        await send_prayer("tohid")
+                        await general_services.send_prayer("tohid")
 
                     elif current_time == "14:55":
-                        await auto_send_hadith()
+                        await hadith_services.auto_send()
 
                     elif current_time == "16:42":
-                        await send_auto_book()
+                        await book_services.auto_send()
 
                     elif current_time == "18:29":
-                        await send_prayer("faraj")
+                        await general_services.send_prayer("faraj")
 
                     elif current_time == "20:16":
-                        await auto_send_not()
+                        await note_services.auto_send()
 
                     elif current_time == "22:03":
-                        await send_auto_lecture()
+                        await lecture_services.auto_send()
 
                     sent_today.add(current_time)
                 except Exception as e:
-                    await send_to_debugger(
+                    await send_to_admins(
                         f"[{current_time}] خطا در اجرای برنامه زمان‌بندی:\n{e}"
                     )
 
