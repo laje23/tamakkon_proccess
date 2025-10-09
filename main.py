@@ -1,12 +1,17 @@
 from balethon.conditions import command, group, at_state, private, all
-from config import *
-from state_handler import *
+from models import lecture_model , hadith_model
+from config.bots import bale_bot
+from config.admins import admins
+from utils.notifiter import send_for_amins
+from config.channels import group_reserch_hadith_id , group_reserch_lecture_id
+from utils.keyboard import *
+from utils.respons import *
 from dotenv import load_dotenv
-from utils import error_response
-from send_message_handler import send_message_to_channel, send_to_debugger
 from schaduler import scheduled_messages
+from services import note_services ,  general_services
 import threading
 import callback_handler as call
+import asyncio
 
 load_dotenv()
 
@@ -31,41 +36,41 @@ async def handle_start(message):
 # 📝 ذخیره یادداشت
 @bale_bot.on_message(at_state("INPUT_NUMBER_NOTE"))
 async def first_state_save_note(message):
-    await first_step_save(message)
+    await note_services.first_step_save(message)
 
 
 @bale_bot.on_message(at_state("INPUT_TEXT_NOTE"))
 async def next_state_save_note(message):
-    await handle_text_parts(message)  # تغییر داده شد به handle_text_parts
+    await note_services.handle_text_parts(message)  # تغییر داده شد به handle_text_parts
 
 
 # ✏️ ویرایش یادداشت
 @bale_bot.on_message(at_state("INPUT_EDIT_NUMBER_NOTE"))
 async def first_state_edit_note(message):
-    await first_step_save(message)  # اگر تابع مشابه first_step_save است
+    await note_services.first_step_save(message)  # اگر تابع مشابه first_step_save است
 
 
 @bale_bot.on_message(at_state("INPUT_EDIT_TEXT_NOTE"))
 async def next_state_edit_note(message):
-    await handle_text_parts(message)  # مجدداً همان تابع handle_text_parts
+    await note_services.handle_text_parts(message)  # مجدداً همان تابع handle_text_parts
 
 
 @bale_bot.on_message(at_state("CONFIRM_MORE_TEXT"))
 async def confirm_more_text_handler(message):
-    await confirm_more_text(message)
+    await note_services.confirm_more_text(message)
 
 
 # 📎 دریافت فایل یا پاسخ 'ندارم' قبل از گرفتن متن یادداشت
 @bale_bot.on_message(at_state("ASK_MEDIA"))
 async def handle_media_state(message):
-    await handle_media_step(message)
+    await note_services.handle_media_step(message)
 
 
 # 📢 ارسال پیام به کانال
 @bale_bot.on_message(at_state("SEND_MESSAGE_TO_CHANEL") & all)
 async def send_to_channel(message):
     sent = await bale_bot.send_message(message.chat.id, "در حال ارسال ...")
-    text = await send_message_to_channel(message, bale_bot)
+    text = await general_services.send_message_to_channel(message, bale_bot)
     message.author.del_state()
     await bale_bot.edit_message_text(sent.chat.id, sent.id, text, back_menu())
 
@@ -140,18 +145,18 @@ async def _(message):
 async def collect_group_input(message):
     try:
         if message.chat.id == group_reserch_hadith_id:
-            db_hadith.save_id_and_content(message.id, message.text)
+            hadith_model.save_id_and_content(message.id, message.text)
 
         elif message.chat.id == group_reserch_lecture_id:
             if message.document:
-                db_lecture.save_lecture(message.document.id, message.caption)
+                lecture_model.save_lecture(message.document.id, message.caption)
             else:
-                await send_to_debugger(
+                await send_for_amins(
                     error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")
                 )
 
     except Exception as e:
-        await send_to_debugger(e)
+        await send_for_amins(e)
 
 
 def start_scheduler_loop():
