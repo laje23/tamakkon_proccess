@@ -1,5 +1,4 @@
 # services/base_service.py
-
 from utils.decorator import safe_run
 from utils.respons import success_response
 from config.channels import bale_channel_id, eitaa_channel_id

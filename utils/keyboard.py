@@ -1,5 +1,5 @@
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import audio as db_audios
+from models import audio_model
 
 
 def main_menu(is_admin: bool):
@@ -21,7 +21,7 @@ def message_menu():
 
 
 def audios_menu():
-    rows = db_audios.get_all_audios()
+    rows = audio_model.get_all_audios()
     keyboards = []
     if rows:
         for row in rows:

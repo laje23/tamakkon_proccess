@@ -1,6 +1,16 @@
-from config import *
-from utils import set_schaduler_state, get_schaduler_state
-import send_message_handler as _send
+from utils.keyboard import *
+from config.admins import admins
+from config.bots import bale_bot
+from models import (
+    books_model,
+    hadith_model,
+    notes_model,
+    clips_model,
+    lecture_model,
+    audio_model,
+)
+from services import *
+from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
 
 
 async def call_handler(callback_query):
@@ -49,11 +59,11 @@ async def call_handler(callback_query):
 
     # 📊 دریافت آمار
     elif t == "get_status":
-        book = db_books.get_status()
-        clip = db_clips.get_status()
-        hadith = db_hadith.get_status()
-        note = db_notes.get_status()
-        lecture = db_lecture.get_status()
+        book = books_model.get_status()
+        clip = clips_model.get_status()
+        hadith = hadith_model.get_status()
+        note = notes_model.get_status()
+        lecture = lecture_model.get_status()
 
         text = f"""آمار کلی سیستم:
 .............................
@@ -82,20 +92,20 @@ async def call_handler(callback_query):
     # 🔄 ارسال خودکار
     elif t == "auto_send_hadith":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
-        result = await _send.auto_send_hadith()
+        result = await hadith_services.auto_send()
         await bale_bot.send_message(ci, result["message"], back_menu())
 
     elif t == "auto_send_note":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
-        result = await _send.auto_send_not()
+        result = await note_services.auto_send()
         await bale_bot.send_message(ci, result["message"], back_menu())
 
     elif t == "auto_send_clip":
-        result = await _send.send_auto_clip()
+        result = await clip_services.auto_send()
         await bale_bot.send_message(ci, result["message"], back_menu())
 
     elif t == "auto_send_book":
-        result = await _send.send_auto_book()
+        result = await book_services.auto_send()
         await bale_bot.send_message(ci, result["message"], back_menu())
 
     # 🧾 ذخیره یادداشت
@@ -138,7 +148,7 @@ async def call_handler(callback_query):
             await bale_bot.edit_message_text(ci, mi, "زمانبندی غیرفعال شد", back_menu())
 
     elif t == "auto_send_lecture":
-        result = await _send.send_auto_lecture()
+        result = await lecture_services.auto_send()
         await bale_bot.send_message(ci, result["message"], back_menu())
 
     elif t == "add_and_edit":
@@ -157,7 +167,7 @@ async def call_handler(callback_query):
     elif t == "create_default_audios_row":
         audio_name_list = ["دعای فرج", "دعای احد", "توحید"]
         for i in audio_name_list:
-            db_audios.insert_audio(str(i), 0000000, "")
+            audio_model.insert_audio(str(i), 0000000, "")
         await bale_bot.edit_message_text(
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
         )

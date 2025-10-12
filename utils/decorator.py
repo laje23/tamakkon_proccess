@@ -1,6 +1,8 @@
 import functools
-from utils import error_response, send_to_admins
-from config import bale_bot, debugger_id
+from utils.respons import error_response
+from utils.notifiter import send_to_admins
+from config.admins import debugger_id
+from config.bots import bale_bot
 import asyncio
 
 

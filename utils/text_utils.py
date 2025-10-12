@@ -1,5 +1,4 @@
 # utils/text_utils.py
-from config import process_note_message
 
 
 def split_text_with_index(text, chunk_size):
@@ -24,12 +23,12 @@ def fa_to_en_int(num):
     return int(result)
 
 
-def prepare_processed_messages(parts, text_id):
+def prepare_processed_messages(parts, text_id, process_func):
     parts_sorted = sorted(parts, key=lambda x: x[0])
     total = len(parts_sorted)
     messages = []
     for i, (_, content) in enumerate(parts_sorted, start=1):
         numbered_text = f"{i}/{total} \n {content}"
-        processed = process_note_message(numbered_text, text_id)
+        processed = process_func(numbered_text, text_id)
         messages.append(processed)
     return messages

@@ -1,6 +1,7 @@
 from services.base_service import BaseService
 from utils.decorator import safe_run
 from utils.respons import success_response
+from utils.message_prosseccing import process_note_message
 from models import (
     notes_model,
 )  # فرض می‌کنیم notes_model شامل توابع و کلاس‌های NoteTableManager و TextPartManager باشد
@@ -51,7 +52,9 @@ class NoteService(BaseService):
             raise Exception("هیچ بخشی از متن موجود نیست")
 
         # آماده‌سازی پیام‌ها
-        messages = prepare_processed_messages(parts, text_id)
+        messages = prepare_processed_messages(
+            parts, text_id, process_func=process_note_message
+        )
 
         # اگر یادداشت شامل فایل باشد
         if file_id and media_type:

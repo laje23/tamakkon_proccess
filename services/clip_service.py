@@ -55,7 +55,7 @@ class ClipService(BaseService):
 
         return success_response(f"کلیپ با شناسه {id} ارسال شد")
 
-    # مرحله دوم - دریافت کلیپ
+    @safe_run
     async def handle_new_clip(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id] = {}
@@ -72,42 +72,30 @@ class ClipService(BaseService):
         message.author.set_state("INPUT_CLIP_CAPTION")
         await self.bale_bot.send_message(message.chat.id, self.MESSAGES["send_caption"])
 
-    # مرحله سوم - دریافت کپشن و ذخیره نهایی کلیپ جدید
+    @safe_run
     async def handle_clip_caption(self, message):
         user_id = message.author.id
         file_id = self.user_temp_data[user_id].get("clip_file_id")
         caption = message.text.strip()
 
-        try:
-            self.db.save_clip(self, file_id, caption)
-            await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["clip_caption_saved"], back_menu()
-            )
-        except Exception as e:
-            await self.bale_bot.send_message(
-                message.chat.id, f"❌ خطا در ذخیره: {str(e)}", back_menu()
-            )
+        self.db.save_clip(file_id, caption)
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["clip_caption_saved"], back_menu()
+        )
 
         self.user_temp_data.pop(user_id, None)
         message.author.del_state()
 
-    # مرحله ویرایش کپشن
+    @safe_run
     async def handle_edit_caption(self, message):
         user_id = message.author.id
         id = self.user_temp_data[user_id].get("edit_id")
         new_caption = message.text.strip()
 
-        try:
-            self.db.edit_clip_caption(id, new_caption)
-            await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["caption_edited"], back_menu()
-            )
-        except Exception as e:
-            await self.bale_bot.send_message(
-                message.chat.id,
-                f"{self.MESSAGES['error_editing_caption']} {str(e)}",
-                back_menu(),
-            )
+        self.db.edit_clip_caption(id, new_caption)
+        await self.bale_bot.send_message(
+            message.chat.id, self.MESSAGES["caption_edited"], back_menu()
+        )
 
         self.user_temp_data.pop(user_id, None)
         message.author.del_state()

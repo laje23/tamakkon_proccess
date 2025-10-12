@@ -1,7 +1,7 @@
 # utils/datetime_utils.py
 import jdatetime
 from datetime import datetime
-from config import base_mentioning_image_url
+from config.urls import base_mentioning_image_url
 
 
 def get_mentioning_day():
