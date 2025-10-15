@@ -1,4 +1,3 @@
-
 services:
   tamakkon_bot:
     build:
@@ -9,6 +8,18 @@ services:
     restart: always
     depends_on:
       - db
+
+  test_bot:
+    build:
+      context: .
+    image: tamakkon_bot_test:dev
+    entrypoint: /app/test.sh   # این جایگزین entrypoint.sh میشه
+    environment:
+      PYTHONPATH: /app           # مطمئن شدن از مسیر پکیج‌ها
+    depends_on:
+      - db
+
+
   db:
     image: postgres:15
     environment:

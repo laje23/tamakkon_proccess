@@ -14,9 +14,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+COPY test.sh /app/test.sh
+RUN chmod +x /app/test.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -3,5 +3,6 @@ balethon
 python-dotenv
 schedule
 psycopg2-binary
+pytest
 pymongo
 pytz
