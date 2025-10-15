@@ -9,4 +9,3 @@ def set_env(monkeypatch):
     monkeypatch.setenv("CHANNEL_BALE", "4488387573")
     monkeypatch.setenv("CHANNEL_EITAA", "10732641")
     monkeypatch.setenv("CHANNEL_EITAA_TEST", "10732641")
-    

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "⏳ منتظر شدن برای آماده شدن دیتابیس..."
+echo "wait for database connection ..."
 until pg_isready -h "$PGHOST" -p "5432" >/dev/null 2>&1; do
   echo "Waiting for PostgreSQL..."
   sleep 2
 done
 
-echo "✅ اجرای فایل اولیه (مثلاً ایجاد جداول)..."
+echo "run enterypoint ..."
 python init_script.py
 
-echo "🚀 اجرای برنامه اصلی..."
+echo "run main ..."
 python main.py
