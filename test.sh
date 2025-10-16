@@ -1,5 +1,6 @@
 #!/bin/bash
 export PYTHONPATH=/app
-echo "run tests __"
-pytest -v
+echo "run all tests in tests/"
+pytest tests/ -v
 exec "$@"
+
