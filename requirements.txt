@@ -6,3 +6,5 @@ psycopg2-binary
 pytest
 pymongo
 pytz
+pytest-asyncio
+anyio

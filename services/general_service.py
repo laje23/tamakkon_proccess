@@ -6,7 +6,7 @@ from utils.respons import success_response
 from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
-from models import audio_model
+from models import audios_model
 from utils.keyboard import back_menu
 import asyncio
 
@@ -17,7 +17,7 @@ class GeneralService:
         user_temp_data,
         bale_bot=bale_bot,
         eitaa_bot=eitaa_bot,
-        audio_model=audio_model,
+        audio_model=audios_model,
     ):
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
@@ -60,6 +60,7 @@ class GeneralService:
 
         file_id, caption = result
         await self.send_audio_file(file_id, caption)
+        return success_response("دعا ارسال شد")
 
     # مثال: ارسال ذکر روز
     @safe_run
@@ -72,6 +73,7 @@ class GeneralService:
             f"ذکر روز {day['zekr']}"
         )
         await self.send_photo_with_text(day["path"], text)
+        return success_response("اطلاعات روز ارسال شد ")
 
     @safe_run
     async def send_message_to_channel(self, message, bot):

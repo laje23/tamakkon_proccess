@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from models.audio_model import (
+from models.audios_model import (
     AudioTableManager,
     create_table,
     insert_audio,
@@ -14,7 +14,7 @@ from models.audio_model import (
 # ---------- Fixture برای Mock کردن اتصال ----------
 @pytest.fixture
 def mock_db_cursor():
-    with patch("models.audio_model.get_connection") as mock_conn_func:
+    with patch("models.audios_model.get_connection") as mock_conn_func:
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value = mock_cursor

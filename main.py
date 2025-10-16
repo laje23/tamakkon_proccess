@@ -1,5 +1,5 @@
 from balethon.conditions import command, group, at_state, private, all
-from models import lecture_model, hadith_model
+from models import hadith_model, lectures_model
 from config.bots import bale_bot
 from config.admins import admins
 from utils.notifiter import send_to_admins
@@ -149,7 +149,7 @@ async def collect_group_input(message):
 
         elif message.chat.id == group_reserch_lecture_id:
             if message.document:
-                lecture_model.save_lecture(message.document.id, message.caption)
+                lectures_model.save_lecture(message.document.id, message.caption)
             else:
                 await send_to_admins(
                     error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")

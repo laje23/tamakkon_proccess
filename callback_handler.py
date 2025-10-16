@@ -3,12 +3,12 @@ from config.admins import admins
 from config.setting import user_temp_data
 from config.bots import bale_bot
 from models import (
+    audios_model,
     books_model,
     hadith_model,
+    lectures_model,
     notes_model,
     clips_model,
-    lecture_model,
-    audio_model,
 )
 from services import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
@@ -64,7 +64,7 @@ async def call_handler(callback_query):
         clip = clips_model.get_status()
         hadith = hadith_model.get_status()
         note = notes_model.get_status()
-        lecture = lecture_model.get_status()
+        lecture = lectures_model.get_status()
 
         text = f"""آمار کلی سیستم:
 .............................
@@ -168,7 +168,7 @@ async def call_handler(callback_query):
     elif t == "create_default_audios_row":
         audio_name_list = ["دعای فرج", "دعای احد", "توحید"]
         for i in audio_name_list:
-            audio_model.insert_audio(str(i), 0000000, "")
+            audios_model.insert_audio(str(i), 0000000, "")
         await bale_bot.edit_message_text(
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
         )
