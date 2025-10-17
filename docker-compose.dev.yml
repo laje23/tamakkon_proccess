@@ -8,6 +8,9 @@ services:
     restart: always
     depends_on:
       - db
+    environment:
+      RESTART_MESSAGE : "تست بات"
+
 
   test_bot:
     build:

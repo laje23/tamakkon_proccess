@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from services.lecture_service import LectureService
+import services.lecture_service as Lecture_model 
 
 @pytest.fixture
 def lecture_service_fixture():
@@ -31,7 +32,7 @@ async def test_auto_send_success(lecture_service_fixture):
     mock_db.auto_return_lecture.return_value = (7, "file_id_1", "کپشن تستی")
 
     # patch کردن file_id_to_bynry تا باینری جعلی برگردونه
-    with patch("services.lecture_service.file_id_to_bynry", new=AsyncMock(return_value=b"fake_bytes")):
+    with patch.object(Lecture_model ,"file_id_to_bynery" , new=AsyncMock(return_value=b"fake_bytes")):
         # patch کردن send_media برای جلوگیری از ارسال واقعی
         service.send_media = AsyncMock()
         response = await service.auto_send()
@@ -53,7 +54,8 @@ async def test_auto_send_no_lecture(lecture_service_fixture):
     service, _, _, mock_db = lecture_service_fixture
     mock_db.auto_return_lecture.return_value = None
 
-    with pytest.raises(Exception) as exc_info:
-        await service.auto_send()
+    response = await service.auto_send()
 
-    assert "هیچ سخنرانی آماده ارسال نیست" in str(exc_info.value)
+    assert response["success"] == False
+    assert "هیچ سخنرانی آماده ارسال نیست" in response["error_message"]
+

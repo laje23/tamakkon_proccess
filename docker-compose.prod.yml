@@ -8,6 +8,8 @@ services:
     restart: always
     depends_on:
       - db
+    environment:
+      RESTART_MESSAGE : "بات ری استارت شد"
   db:
     image: postgres:15
     restart: always

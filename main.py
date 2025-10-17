@@ -8,7 +8,7 @@ from utils.keyboard import *
 from utils.respons import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from services import note_services, general_services, book_services, clip_services
+from config.service_configs import note_services, general_services, book_services, clip_services
 import threading
 import callback_handler as call
 import asyncio

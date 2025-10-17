@@ -10,6 +10,7 @@ def error_response(message: str, exception: Exception = None):
     return {
         "success": False,
         "message": message,
+        "error_message": str(exception) if exception else None,
         "error_type": type(exception).__name__ if exception else None,
         "traceback": traceback.format_exc() if exception else None,
     }

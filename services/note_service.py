@@ -62,7 +62,48 @@ class NoteService(BaseService):
 
             if media_type == "photo":
                 await self.bale_bot.send_photo(
+                    self.bale_channel_id, file, messages[0]
+                )
+            elif media_type == "video":
+                await self.bale_bot.send_video(
                     self.bale_channel_id, file.read(), messages[0]
+                )
+            elif media_type == "audio":
+                await self.bale_bot.send_audio(
+                    self.bale_channel_id, file.read(), messages[0]
+                )
+
+            await self.eitaa_bot.send_file(self.eitaa_channel_id, file, messages[0])
+            messages.pop(0)
+    @safe_run
+    async def auto_send(self):
+        """
+        ارسال خودکار یک یادداشت به کانال‌ها
+        """
+        # گرفتن یادداشت آماده ارسال
+        note = self.db.get_unsent_note()
+        if not note:
+            raise Exception("هیچ یادداشتی برای ارسال موجود نیست")
+
+        text_id, file_id, media_type = note
+
+        # گرفتن بخش‌های متن
+        parts = self.db.get_parts(text_id)
+        if not parts:
+            raise Exception("هیچ بخشی از متن موجود نیست")
+
+        # آماده‌سازی پیام‌ها
+        messages = prepare_processed_messages(
+            parts, text_id, process_func=process_note_message
+        )
+
+        # اگر یادداشت شامل فایل باشد
+        if file_id and media_type:
+            file = await file_id_to_bynery(file_id, self.bale_bot)
+
+            if media_type == "photo":
+                await self.bale_bot.send_photo(
+                    self.bale_channel_id, file, messages[0]
                 )
             elif media_type == "video":
                 await self.bale_bot.send_video(
