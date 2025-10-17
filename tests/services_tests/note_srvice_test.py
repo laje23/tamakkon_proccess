@@ -27,19 +27,15 @@ def note_service_fixture():
 async def test_auto_send_success(note_service_fixture):
     service, bale_bot, eitaa_bot, mock_db = note_service_fixture
 
-    # داده‌های دیتابیس
     mock_db.get_unsent_note.return_value = (7, "file_id_1", "photo")
     mock_db.get_parts.return_value = ["بخش اول متن", "بخش دوم متن"]
 
-    # فایل و پیام دلخواه
     mock_file = b"fake_bytes"
     mock_message = "پیام تستی"
 
-    # patch کردن تابع تولید پیام و تبدیل file_id به فایل
     with patch("services.note_service.prepare_processed_messages", return_value=[mock_message]), \
         patch("services.note_service.file_id_to_bynery", new=AsyncMock(return_value=mock_file)):
 
-        # mock کردن متدهای بات
         service.bale_bot.send_photo = AsyncMock()
         service.eitaa_bot.send_file = AsyncMock()
         service.bale_bot.send_message = AsyncMock()
