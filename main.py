@@ -15,7 +15,7 @@ import asyncio
 
 load_dotenv()
 
-
+bale_bot.send_photo()
 # 🎯 هندل کردن دکمه‌های callback
 @bale_bot.on_callback_query(private)
 async def reply_buttons(callback_query):
