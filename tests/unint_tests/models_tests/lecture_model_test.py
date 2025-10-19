@@ -35,7 +35,7 @@ def test_save_lecture(mock_db_cursor):
     cursor, conn = mock_db_cursor
     cursor.fetchone.return_value = (0,)
     save_lecture("fileid123", "کپشن تست")
-    
+
     # بررسی دو اجرای cursor.execute
     assert cursor.execute.call_count == 2
 

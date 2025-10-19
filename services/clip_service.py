@@ -1,7 +1,7 @@
 # services/clip_service.py
 
 from services.base_service import BaseService
-from utils.respons import success_response, error_response
+from utils.response import success_response, error_response
 from utils.decorator import safe_run
 from utils.media import file_id_to_bynery
 from utils.keyboard import back_menu

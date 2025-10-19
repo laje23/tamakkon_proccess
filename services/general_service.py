@@ -1,8 +1,8 @@
 # services/general_service.py
 
 from utils.decorator import safe_run
-from utils.datatime import get_mentioning_day
-from utils.respons import success_response
+from utils.datetime import get_mentioning_day
+from utils.response import success_response
 from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot

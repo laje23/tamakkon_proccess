@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from services.note_service import NoteService
 import tracemalloc
+
 tracemalloc.start()
 
 
@@ -36,9 +37,13 @@ async def test_auto_send_test_photo(note_service_fixture):
 
     # 🟢 مرحله ۲: شبیه‌سازی تابع prepare_processed_messages و success_response
     # توجه کن که باید patch بشن تا در محدوده‌ی فایل note_service باشند
-    with patch("services.note_service.prepare_processed_messages") as mock_prepare, \
-        patch("services.note_service.file_id_to_bynery") as mock_file_id_to_bynery, \
-        patch("services.note_service.success_response") as mock_success:
+    with patch(
+        "services.note_service.prepare_processed_messages"
+    ) as mock_prepare, patch(
+        "services.note_service.file_id_to_bynery"
+    ) as mock_file_id_to_bynery, patch(
+        "services.note_service.success_response"
+    ) as mock_success:
 
         # تنظیم mockها:
         mock_prepare.return_value = ["message"]
@@ -47,7 +52,9 @@ async def test_auto_send_test_photo(note_service_fixture):
         # این تابع async هست، پس باید یک awaitable برگردونه
         mock_file = MagicMock()
         mock_file.read.return_value = b"fake binary"
-        mock_file_id_to_bynery.return_value = mock_file  # نیازی به AsyncMock نیست چون در await resolve میشه
+        mock_file_id_to_bynery.return_value = (
+            mock_file  # نیازی به AsyncMock نیست چون در await resolve میشه
+        )
 
         # شبیه‌سازی ارسال پیام‌ها
         bale_bot.send_photo = AsyncMock()
@@ -84,7 +91,12 @@ async def test_first_step_save_new_note(note_service_fixture):
     """
     service, bale_bot, _, mock_db = note_service_fixture
     mock_db.check_is_exist.return_value = False
-    service.user_temp_data = {"note_number":123456789, "media_type": None, "media_file_id": None, "part_index": 0,}
+    service.user_temp_data = {
+        "note_number": 123456789,
+        "media_type": None,
+        "media_file_id": None,
+        "part_index": 0,
+    }
 
     message = MagicMock()
     message.text = "1"
@@ -107,7 +119,12 @@ async def test_first_step_save_existing_note(note_service_fixture):
     """
     service, bale_bot, _, mock_db = note_service_fixture
     mock_db.check_is_exist.return_value = True
-    service.user_temp_data = {"note_number":123456789, "media_type": None, "media_file_id": None, "part_index": 0,}
+    service.user_temp_data = {
+        "note_number": 123456789,
+        "media_type": None,
+        "media_file_id": None,
+        "part_index": 0,
+    }
 
     message = MagicMock()
     message.text = "1"
@@ -127,7 +144,12 @@ async def test_handle_text_parts(note_service_fixture):
     تست handle_text_parts ذخیره بخش متن
     """
     service, bale_bot, _, mock_db = note_service_fixture
-    service.user_temp_data = {"note_number":123456789, "media_type": None, "media_file_id": None, "part_index": 0,}
+    service.user_temp_data = {
+        "note_number": 123456789,
+        "media_type": None,
+        "media_file_id": None,
+        "part_index": 0,
+    }
     service.user_temp_data[123] = {"note_number": 1, "part_index": 0}
 
     message = MagicMock()
@@ -149,7 +171,12 @@ async def test_confirm_more_text_yes_no(note_service_fixture):
     تست confirm_more_text پاسخ بله و خیر
     """
     service, bale_bot, _, mock_db = note_service_fixture
-    service.user_temp_data = {"note_number":123456789, "media_type": None, "media_file_id": None, "part_index": 0,}
+    service.user_temp_data = {
+        "note_number": 123456789,
+        "media_type": None,
+        "media_file_id": None,
+        "part_index": 0,
+    }
     user_id = 123
     service.user_temp_data[user_id] = {"note_number": 1}
 
