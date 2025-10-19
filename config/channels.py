@@ -1,9 +1,9 @@
 import os
 
-group_reserch_hadith_id = int(os.getenv("RESERCH_HADITH")or "0")
-group_reserch_clip_id = int(os.getenv("RESERCH_CLIP_ID")or "0")
-group_reserch_lecture_id = int(os.getenv("RESERCH_LECTURE_ID")or "0")
+group_reserch_hadith_id = int(os.getenv("RESERCH_HADITH") or "0")
+group_reserch_clip_id = int(os.getenv("RESERCH_CLIP_ID") or "0")
+group_reserch_lecture_id = int(os.getenv("RESERCH_LECTURE_ID") or "0")
 
-bale_channel_id = int(os.getenv("CHANNEL_BALE")or "0")
-eitaa_channel_id = int(os.getenv("CHANNEL_EITAA")or "0")
-eitaa_channel_id_test = int(os.getenv("CHANNEL_EITAA_TEST")or "0")
+bale_channel_id = int(os.getenv("CHANNEL_BALE") or "0")
+eitaa_channel_id = int(os.getenv("CHANNEL_EITAA") or "0")
+eitaa_channel_id_test = int(os.getenv("CHANNEL_EITAA_TEST") or "0")

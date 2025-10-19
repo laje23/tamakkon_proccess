@@ -1,5 +1,5 @@
 import functools
-from utils.respons import error_response
+from utils.response import error_response
 from utils.notifiter import send_to_admins
 from config.admins import debugger_id
 from config.bots import bale_bot

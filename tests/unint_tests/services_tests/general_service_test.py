@@ -18,7 +18,9 @@ def general_service_fixture():
     service = GeneralService(user_temp_data, bale_bot, eitaa_bot)
 
     # Mock تابع async file_id_to_bynery
-    with patch("services.general_service.file_id_to_bynery", new_callable=AsyncMock) as mock_file_id_to_bynery:
+    with patch(
+        "services.general_service.file_id_to_bynery", new_callable=AsyncMock
+    ) as mock_file_id_to_bynery:
         # Mock object که read async دارد
         mock_bin_file = AsyncMock()
         mock_bin_file.read.return_value = b"fake audio data"

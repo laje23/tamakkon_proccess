@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from services.clip_service import ClipService
 import services.clip_service as clip_module  # برای patch کردن تابع file_id_to_bynery
 
+
 @pytest.fixture
 def clip_service_fixture():
     """
@@ -34,7 +35,9 @@ async def test_auto_send(clip_service_fixture):
     mock_db.auto_return_file_id.return_value = (1, "file_id_1", "کپشن تستی")
 
     # patch کردن تابع file_id_to_bynery در namespace ClipService
-    with patch.object(clip_module, "file_id_to_bynery", new=AsyncMock(return_value=b"fake_bytes")):
+    with patch.object(
+        clip_module, "file_id_to_bynery", new=AsyncMock(return_value=b"fake_bytes")
+    ):
         service.send_media = AsyncMock()  # patch متد send_media
         response = await service.auto_send()
 
