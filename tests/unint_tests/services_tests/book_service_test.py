@@ -9,19 +9,24 @@ def user_data():
     """دیکشنری موقت برای ذخیره داده‌های کاربر"""
     return {}
 
+
 @pytest.fixture
 def mock_bots():
     """ساخت AsyncMock برای بات‌های بله و ایتا"""
     return AsyncMock(), AsyncMock()
 
+
 @pytest.fixture
 def book_service(user_data, mock_bots):
     """ساخت نمونه BookService"""
     bale_bot, eitaa_bot = mock_bots
-    service = BookService(user_temp_data=user_data, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+    service = BookService(
+        user_temp_data=user_data, bale_bot=bale_bot, eitaa_bot=eitaa_bot
+    )
     # جایگزینی db مدل با mock
     service.db = MagicMock()
     return service
+
 
 @pytest.mark.asyncio
 async def test_input_book_title(book_service, user_data):
@@ -41,6 +46,7 @@ async def test_input_book_title(book_service, user_data):
     # بررسی ارسال پیام
     book_service.bale_bot.send_message.assert_awaited_once()
 
+
 @pytest.mark.asyncio
 async def test_input_book_author(book_service, user_data):
     """تست دریافت نام نویسنده"""
@@ -56,6 +62,7 @@ async def test_input_book_author(book_service, user_data):
     assert user_data[1]["author"] == "نویسنده تستی"
     message.author.set_state.assert_called_with("INPUT_BOOK_PUBLISHER")
     book_service.bale_bot.send_message.assert_awaited_once()
+
 
 @pytest.mark.asyncio
 async def test_input_book_publisher(book_service, user_data):
@@ -73,10 +80,15 @@ async def test_input_book_publisher(book_service, user_data):
     message.author.set_state.assert_called_with("INPUT_BOOK_EXCERPT")
     book_service.bale_bot.send_message.assert_awaited_once()
 
+
 @pytest.mark.asyncio
 async def test_input_book_excerpt(book_service, user_data):
     """تست دریافت گزیده کتاب و ذخیره در دیتابیس"""
-    user_data[1] = {"title": "کتاب تستی", "author": "نویسنده تستی", "publisher": "ناشر تستی"}
+    user_data[1] = {
+        "title": "کتاب تستی",
+        "author": "نویسنده تستی",
+        "publisher": "ناشر تستی",
+    }
     message = MagicMock()
     message.text = "گزیده تستی"
     message.author.id = 1

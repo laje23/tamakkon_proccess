@@ -23,6 +23,7 @@ def mock_db_cursor():
         mock_conn_func.return_value = mock_conn
         yield mock_cursor, mock_conn
 
+
 # ---------- تست create_table ----------
 def test_create_table(mock_db_cursor):
     cursor, conn = mock_db_cursor
@@ -32,25 +33,26 @@ def test_create_table(mock_db_cursor):
     assert "CREATE TABLE IF NOT EXISTS clips" in sql
     conn.commit.assert_called_once()
 
+
 # ---------- تست save_clip ----------
 def test_save_clip(mock_db_cursor):
     cursor, conn = mock_db_cursor
     cursor.fetchone.return_value = (1,)
     save_clip("906:12345678", "کپشن تستی")
     assert cursor.execute.call_count == 2
-    
+
     first_sql = cursor.execute.call_args_list[0][0][0]
     assert "SELECT MIN(sent) FROM clips" in first_sql
-    
+
     second_sql = cursor.execute.call_args_list[1][0][0]
     assert "INSERT INTO clips" in second_sql
-    
+
     params = cursor.execute.call_args_list[1][0][1]
     assert params[0] == "906:12345678"
     assert params[1] == "کپشن تستی"
     assert params[2] == 1
     conn.commit.assert_called_once()
-    
+
 
 # ---------- تست  mark_clip_sent ----------
 def test_mark_clip_sent(mock_db_cursor):
@@ -73,6 +75,7 @@ def test_auto_return_file_id(mock_db_cursor):
     cursor.fetchone.return_value = (1, "file123", "کپشن")
     result = auto_return_file_id()
     assert result == (1, "file123", "کپشن")
+
 
 def test_auto_return_file_id_none(mock_db_cursor):
     cursor, _ = mock_db_cursor
@@ -98,6 +101,7 @@ def test_check_clip_exists_true(mock_db_cursor):
     exists = check_clip_exists(10)
     assert exists is True
 
+
 def test_check_clip_exists_false(mock_db_cursor):
     cursor, _ = mock_db_cursor
     cursor.fetchone.return_value = None
@@ -111,6 +115,7 @@ def test_get_last_clip_id(mock_db_cursor):
     cursor.fetchone.return_value = (42,)
     last_id = get_last_clip_id()
     assert last_id == 42
+
 
 def test_get_last_clip_id_none(mock_db_cursor):
     cursor, _ = mock_db_cursor
@@ -138,11 +143,13 @@ def test_is_clip_sent_true(mock_db_cursor):
     result = is_clip_sent(8)
     assert result is True
 
+
 def test_is_clip_sent_false(mock_db_cursor):
     cursor, _ = mock_db_cursor
     cursor.fetchone.return_value = (0,)
     result = is_clip_sent(8)
     assert result is False
+
 
 def test_is_clip_sent_none(mock_db_cursor):
     cursor, _ = mock_db_cursor

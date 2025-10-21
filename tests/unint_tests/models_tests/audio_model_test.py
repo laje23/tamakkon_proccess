@@ -72,9 +72,7 @@ def test_get_file_id_and_caption_by_id_none(mock_db_cursor):
 # ---------- تست get_all_audios ----------
 def test_get_all_audios(mock_db_cursor):
     cursor, _ = mock_db_cursor
-    cursor.fetchall.return_value = [
-        (1, "file1.mp3", "fileid123", "کپشن تست")
-    ]
+    cursor.fetchall.return_value = [(1, "file1.mp3", "fileid123", "کپشن تست")]
     result = get_all_audios()
     cursor.execute.assert_called_once()
     assert result == [(1, "file1.mp3", "fileid123", "کپشن تست")]

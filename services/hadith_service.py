@@ -1,7 +1,7 @@
 # services/hadith_service.py
 
 from .base_service import BaseService
-from utils.respons import success_response, error_response
+from utils.response import success_response, error_response
 from utils.message_prosseccing import process_hadith_message
 from models import hadith_model as db_hadith
 
