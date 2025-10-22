@@ -11,16 +11,6 @@ services:
     environment:
       RESTART_MESSAGE : "بات ری استارت شد"
 
-  test_bot:
-    build:
-      context: .
-    image: tamakkon_bot_test:prod 
-    entrypoint: /app/test.sh   
-    environment:
-      PYTHONPATH: /app   
-    depends_on:
-      - db
-
   db:
     image: postgres:15
     restart: always
