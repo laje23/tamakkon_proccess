@@ -27,7 +27,6 @@ class LectureService(BaseService):
 
         id, file_id, caption = lecture
 
-        # گرفتن باینری فایل از بات
         bin_file = await file_id_to_bynery(file_id, self.bale_bot)
 
         # اضافه کردن کپشن اختصاصی
