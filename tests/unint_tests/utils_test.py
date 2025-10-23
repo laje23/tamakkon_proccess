@@ -87,8 +87,6 @@ def test_get_mentioning_day_valid_days(day_en, expected_fa, expected_zekr, image
         assert result["zekr"] == expected_zekr
         assert result["date"] == fake_jalali_date
 
-        # چون base_mentioning_image_url یک مسیر ویندوزی است، خروجی باید مثل:
-        # C:/projects/mybot/assets/images/zekr_day (1).jpg
         expected_path = rf"C:/projects/mybot/assets/images/zekr_day ({image_index}).jpg"
         assert result["path"] == expected_path
 
