@@ -11,21 +11,6 @@ services:
     environment:
       RESTART_MESSAGE: "تست بات"
 
-  test_bot:
-    build:
-      context: .
-    image: tamakkon_bot_test:dev
-    entrypoint: /app/test.sh  
-    environment:
-      PYTHONPATH: /app
-      DB_HOST: db_test
-      DB_PORT: 5432
-      DB_NAME: test_db
-      DB_USER: test_user
-      DB_PASSWORD: test_pass
-    depends_on:
-      - db_test
-
   db:
     image: postgres:15
     environment:
@@ -37,17 +22,5 @@ services:
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
 
-  db_test:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_pass
-      POSTGRES_DB: test_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata_test:/var/lib/postgresql/data
-
 volumes:
   pgdata_dev:
-  pgdata_test:
