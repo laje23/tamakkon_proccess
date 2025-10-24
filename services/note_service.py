@@ -16,6 +16,7 @@ class NoteService(BaseService):
         سرویس مدیریت ارسال یادداشت‌ها
         """
         super().__init__(db_model=notes_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        self.user_temp_data = user_temp_data
         self.MESSAGES = {
             "invalid_number": "❗️ لطفاً فقط عدد مثبت وارد کنید.",
             "note_exists": "این یادداشت موجود است. می‌خواهید آن را ویرایش کنید؟",
