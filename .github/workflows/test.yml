@@ -1,20 +1,16 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - develop   # یعنی فقط وقتی PR به develop زده میشه
+    types: [opened, synchronize, reopened]  # باز شد یا آپدیت شد
+    paths-ignore:
+      - 'README.md'  # مثلا برای فایل‌های غیرمهم اجرا نشه
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -29,16 +25,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p 5432 -U postgres; do sleep 1; done
-
       - name: Run tests
-        env:
-          TEST_DB_NAME: test_db
-          TEST_DB_USER: postgres
-          TEST_DB_PASSWORD: postgres
-          TEST_DB_HOST: localhost
-          TEST_DB_PORT: 5432
         run: |
           pytest -v
