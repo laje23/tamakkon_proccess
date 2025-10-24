@@ -20,7 +20,6 @@ import asyncio
 
 load_dotenv()
 
-bale_bot.send_photo()
 
 
 # 🎯 هندل کردن دکمه‌های callback
