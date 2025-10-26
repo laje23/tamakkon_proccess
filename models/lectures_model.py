@@ -29,9 +29,8 @@ class LecturesTable:
     def insert_row(self, file_id, caption):
         self.cursor.execute("SELECT MIN(sent) FROM lectures")
         min_sent = self.cursor.fetchone()[0]
-        if min_sent is None:
+        if not min_sent:
             min_sent = 0
-
         self.cursor.execute(
             "INSERT INTO lectures (file_id, caption, sent) VALUES (%s, %s, %s)",
             (file_id, caption, min_sent),
