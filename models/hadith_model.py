@@ -56,8 +56,7 @@ class HadithTableManager:
     def select_unsent(self):
         self.cursor.execute(
             """
-            SELECT content, id
-            FROM hadith
+            SELECT content, id FROM hadith
             WHERE sent = (
                 SELECT MIN(sent) FROM hadith
             )
