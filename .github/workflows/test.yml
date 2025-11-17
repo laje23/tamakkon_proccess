@@ -28,7 +28,7 @@ jobs:
       # مرحله یونیت تست
       - name: Run Unit Tests
         run: |
-          pytest tests/unit --maxfail=1 --disable-warnings -v
+          pytest tests/unit_tests --maxfail=1 --disable-warnings -v
 
       # مرحله اینتگریشن
       - name: Run Integration Tests
