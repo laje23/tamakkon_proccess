@@ -33,4 +33,4 @@ jobs:
       # مرحله اینتگریشن
       - name: Run Integration Tests
         run: |
-          pytest tests/integration --maxfail=1 --disable-warnings -v
+          pytest tests/integration_tests --maxfail=1 --disable-warnings -v
