@@ -10,7 +10,7 @@ from models import (
     notes_model,
     clips_model,
 )
-from services import *
+from config.service_configs import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
 
 
