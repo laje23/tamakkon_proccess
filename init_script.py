@@ -5,6 +5,8 @@ from models import (
     hadith_model,
     lectures_model,
     notes_model,
+    qaa_collection_model,
+    qaa_questions_model
 )
 from config.channels import eitaa_channel_id_test
 import os
@@ -20,6 +22,8 @@ if __name__ == "__main__":
     hadith_model.create_table()
     books_model.create_table()
     audios_model.create_table()
+    qaa_collection_model.create_collections_table()
+    qaa_questions_model.create_questions_table()
     asyncio.run(
         eitaa_bot.send_message(eitaa_channel_id_test, os.getenv("RESTART_MESSAGE"))
     )

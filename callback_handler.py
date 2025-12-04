@@ -172,3 +172,8 @@ async def call_handler(callback_query):
         await bale_bot.edit_message_text(
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
         )
+
+    elif t == "qaa" :
+        await bale_bot.send_message(ci, "عنوان پرسش رو وارد کنید")
+        callback_query.author.set_state("ENTER_QAA_TITLE")
+        

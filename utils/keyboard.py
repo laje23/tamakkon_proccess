@@ -72,6 +72,7 @@ def save_or_edit_menu():
         [InlineKeyboardButton("یادداشت", "note_menu")],
         [InlineKeyboardButton("کتاب", "book_menu")],
         [InlineKeyboardButton("کلیپ", "clip_menu")],
+        [InlineKeyboardButton("پرسش و پاسخ", "qaa")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
 

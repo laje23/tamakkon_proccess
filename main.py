@@ -12,6 +12,7 @@ from config.service_configs import (
     note_services,
     general_services,
     book_services,
+    qaa_service,
     clip_services,
 )
 import threading
@@ -144,6 +145,46 @@ async def _(message):
 @bale_bot.on_message(at_state("INPUT_AUDIO_FILE"))
 async def _(message):
     await clip_services.save_new_audio(message)
+
+
+# ⏳ مرحله اول – دریافت عنوان کالکشن
+@bale_bot.on_message(at_state("ENTER_QAA_TITLE"))
+async def handle_qaa_title(message):
+    await qaa_service.save_qaa_state_1(message.author, message.text)
+
+
+# 📝 مرحله دوم – دریافت متن سوال
+@bale_bot.on_message(at_state("ENTER_QAA_TEXT"))
+async def handle_qaa_question_text(message):
+    await qaa_service.save_qaa_state_2(message.author, message.text)
+
+
+# ❌ مرحله سوم – جواب غلط ۱
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_1"))
+async def handle_qaa_wrong_1(message):
+    await qaa_service.save_qaa_state_3(message.author, message.text)
+
+
+# ❌ مرحله چهارم – جواب غلط ۲
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_2"))
+async def handle_qaa_wrong_2(message):
+    await qaa_service.save_qaa_state_4(message.author, message.text)
+
+
+# ❌ مرحله پنجم – جواب غلط ۳
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_3"))
+async def handle_qaa_wrong_3(message):
+    await qaa_service.save_qaa_state_5(message.author, message.text)
+
+
+# ✅ مرحله ششم – جواب درست
+@bale_bot.on_message(at_state("ENTER_QAA_CORRECT_OPTION"))
+async def handle_qaa_correct(message):
+    await qaa_service.save_qaa_state_6(message.author, message.text)
+
+
+
+
 
 
 # 📥 دریافت پیام‌های گروهی

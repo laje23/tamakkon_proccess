@@ -1,5 +1,5 @@
 jdatetime
-balethon
+balethon == 1.0.1
 python-dotenv
 schedule
 psycopg2-binary
