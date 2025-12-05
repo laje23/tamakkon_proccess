@@ -1,5 +1,6 @@
 from models.database_connection import get_connection
 
+
 class QuestionsTable:
     def __init__(self):
         self.conn = get_connection()
@@ -32,11 +33,13 @@ class QuestionsTable:
     def get_next_index(self, collection_id):
         self.cursor.execute(
             "SELECT COALESCE(MAX(question_index), 0) + 1 FROM questions WHERE collection_id = %s",
-            (collection_id,)
+            (collection_id,),
         )
         return self.cursor.fetchone()[0]
 
-    def insert_row(self, collection_id, question_text, option1, option2, option3, correct):
+    def insert_row(
+        self, collection_id, question_text, option1, option2, option3, correct
+    ):
         q_index = self.get_next_index(collection_id)
 
         self.cursor.execute(
@@ -46,11 +49,13 @@ class QuestionsTable:
                 option1, option2, option3, correct
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
-            (collection_id, q_index, question_text, option1, option2, option3, correct)
+            (collection_id, q_index, question_text, option1, option2, option3, correct),
         )
 
         return q_index
 
+    def delete_question(self, question_id):
+        self.cursor.execute("DELETE FROM questions WHERE id = %s", (question_id,))
 
 
 def create_questions_table():
@@ -60,12 +65,9 @@ def create_questions_table():
 
 def add_question(collection_id, question_text, option1, option2, option3, correct):
     with QuestionsTable() as db:
-        return db.insert_row(collection_id, question_text, option1, option2, option3, correct)
-
-
-def get_questions(collection_id):
-    with QuestionsTable() as db:
-        return db.get_questions_by_collection(collection_id)
+        return db.insert_row(
+            collection_id, question_text, option1, option2, option3, correct
+        )
 
 
 def delete_question(question_id):

@@ -79,12 +79,20 @@ class GeneralService:
         if x := await get_media_bytes(message, bot):
             bin_file, typefile = x
             if typefile == "photo":
-                await self.bale_bot.send_photo(self.bale_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_photo(
+                    self.bale_channel_id, bin_file, message.caption
+                )
             elif typefile == "video":
-                await self.bale_bot.send_video(self.bale_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_video(
+                    self.bale_channel_id, bin_file, message.caption
+                )
             elif typefile == "audio":
-                await self.bale_bot.send_audio(self.bale_channel_id, bin_file, message.caption)
-            await self.eitaa_bot.send_file(self.eitaa_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_audio(
+                    self.bale_channel_id, bin_file, message.caption
+                )
+            await self.eitaa_bot.send_file(
+                self.eitaa_channel_id, bin_file, message.caption
+            )
             return success_response("پیام ارسال شد")
         else:
             text = message.text or message.caption

@@ -10,6 +10,7 @@ from models.books_model import (
     check_book_exists,
 )
 
+
 @pytest.fixture
 def mock_db_connection():
     """اتصال و کرسر جعلی برای شبیه‌سازی پایگاه‌داده"""
@@ -37,7 +38,9 @@ def test_save_book(mock_db_connection):
 def test_edit_book(mock_db_connection):
     mock_conn, mock_cursor = mock_db_connection
     with patch("models.books_model.get_connection", return_value=mock_conn):
-        edit_book(1, "Updated Title", "Updated Author", "Updated Pub", "Updated Excerpt")
+        edit_book(
+            1, "Updated Title", "Updated Author", "Updated Pub", "Updated Excerpt"
+        )
 
         mock_cursor.execute.assert_called_once_with(
             """

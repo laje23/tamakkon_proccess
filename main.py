@@ -22,7 +22,6 @@ import asyncio
 load_dotenv()
 
 
-
 # 🎯 هندل کردن دکمه‌های callback
 @bale_bot.on_callback_query(private)
 async def reply_buttons(callback_query):
@@ -181,10 +180,6 @@ async def handle_qaa_wrong_3(message):
 @bale_bot.on_message(at_state("ENTER_QAA_CORRECT_OPTION"))
 async def handle_qaa_correct(message):
     await qaa_service.save_qaa_state_6(message.author, message.text)
-
-
-
-
 
 
 # 📥 دریافت پیام‌های گروهی

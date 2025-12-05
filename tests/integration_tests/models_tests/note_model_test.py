@@ -28,6 +28,7 @@ def mock_conn_cursor():
 
 # ---------------- NoteTableManager ----------------
 
+
 def test_create_table_note(mock_conn_cursor):
     mock_conn, mock_cursor = mock_conn_cursor
     with patch("models.notes_model.get_connection", return_value=mock_conn):
@@ -46,7 +47,7 @@ def test_insert_text_and_exists(mock_conn_cursor):
 
         exists = check_is_exist(123)
         mock_cursor.execute.assert_called()
-        assert exists is not None 
+        assert exists is not None
 
 
 def test_mark_sent_and_is_sent(mock_conn_cursor):
@@ -80,6 +81,7 @@ def test_get_unsent_note(mock_conn_cursor):
 
 
 # ---------------- TextPartManager ----------------
+
 
 def test_insert_get_delete_part(mock_conn_cursor):
     mock_conn, mock_cursor = mock_conn_cursor

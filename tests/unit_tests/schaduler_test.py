@@ -12,6 +12,7 @@ async def test_scheduled_messages_calls_prayer_ahd(monkeypatch):
         @staticmethod
         def now(tz=None):
             from datetime import datetime
+
             return datetime(2024, 1, 1, 6, 0, 0)
 
     monkeypatch.setattr("schaduler.datetime", FakeDatetime)
@@ -22,7 +23,9 @@ async def test_scheduled_messages_calls_prayer_ahd(monkeypatch):
     mock_sleep = AsyncMock(side_effect=Exception("stop"))  # برای توقف حلقه بی‌نهایت
 
     monkeypatch.setattr("schaduler.get_schaduler_state", mock_get_state)
-    monkeypatch.setattr("schaduler.general_services", MagicMock(send_prayer=mock_send_prayer))
+    monkeypatch.setattr(
+        "schaduler.general_services", MagicMock(send_prayer=mock_send_prayer)
+    )
     monkeypatch.setattr("schaduler.asyncio.sleep", mock_sleep)
 
     # --- اجرا ---
@@ -44,6 +47,7 @@ async def test_scheduled_messages_handles_exception(monkeypatch):
         @staticmethod
         def now(tz=None):
             from datetime import datetime
+
             return datetime(2024, 1, 1, 9, 34, 0)
 
     monkeypatch.setattr("schaduler.datetime", FakeDatetime)
@@ -80,6 +84,7 @@ async def test_scheduled_messages_does_nothing_when_state_off(monkeypatch):
         @staticmethod
         def now(tz=None):
             from datetime import datetime
+
             return datetime(2024, 1, 1, 6, 0, 0)
 
     monkeypatch.setattr("schaduler.datetime", FakeDatetime)
@@ -89,7 +94,9 @@ async def test_scheduled_messages_does_nothing_when_state_off(monkeypatch):
     mock_sleep = AsyncMock(side_effect=Exception("stop"))
 
     monkeypatch.setattr("schaduler.get_schaduler_state", mock_get_state)
-    monkeypatch.setattr("schaduler.general_services", MagicMock(send_prayer=mock_send_prayer))
+    monkeypatch.setattr(
+        "schaduler.general_services", MagicMock(send_prayer=mock_send_prayer)
+    )
     monkeypatch.setattr("schaduler.asyncio.sleep", mock_sleep)
 
     try:

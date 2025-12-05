@@ -6,7 +6,7 @@ from models import (
     lectures_model,
     notes_model,
     qaa_collection_model,
-    qaa_questions_model
+    qaa_questions_model,
 )
 from config.channels import eitaa_channel_id_test
 import os

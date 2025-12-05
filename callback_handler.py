@@ -9,6 +9,7 @@ from models import (
     lectures_model,
     notes_model,
     clips_model,
+    qaa_collection_model,
 )
 from config.service_configs import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
@@ -173,7 +174,31 @@ async def call_handler(callback_query):
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
         )
 
-    elif t == "qaa" :
+    elif t == "qaa_save":
         await bale_bot.send_message(ci, "عنوان پرسش رو وارد کنید")
         callback_query.author.set_state("ENTER_QAA_TITLE")
-        
+
+    elif t == "qaa_menu":
+        await bale_bot.edit_message_text(
+            ci, mi, "یکی از گزینه ها را انتخاب کنید", qaa_menu()
+        )
+
+    elif t == "start_qaa":
+        await bale_bot.edit_message_text(
+            ci, mi, "یکی از مسابقات را برای شروع آن انتخاب کنید", start_qaa_menu()
+        )
+
+    elif t == "end_qaa":
+        await bale_bot.edit_message_text(
+            ci, mi, "یکی از مسابقات را برای پایان دادن به آن انتخاب کنید", end_qaa_menu()
+        )
+
+    elif t.startswith("start_qaa:"):
+        id = t.split(":")[1].strip()
+        qaa_collection_model.activate_collection(id)
+        await bale_bot.edit_message_text(ci, mi, "مسابقه فعال شد", back_menu())
+
+    elif t.startswith("end_qaa:"):
+        id = t.split(":")[1].strip()
+        qaa_collection_model.deactivate_collection(id)
+        await bale_bot.edit_message_text(ci, mi, "مسابقه غیر فعال شد", back_menu())

@@ -1,5 +1,5 @@
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import audios_model
+from models import audios_model, qaa_collection_model
 
 
 def main_menu(is_admin: bool):
@@ -12,12 +12,49 @@ def main_menu(is_admin: bool):
 def message_menu():
     return InlineKeyboard(
         [InlineKeyboardButton("ارسال ها", "send_menu")],
+        [InlineKeyboardButton("مسابقات", "qaa_menu")],
         [InlineKeyboardButton("ذخیره و ویرایش", "add_and_edit")],
         [InlineKeyboardButton("صوت های ارسالی", "change_audio_file_id")],
         [InlineKeyboardButton("گرفتن آمار", "get_status")],
         [InlineKeyboardButton("زمانبندی", "schaduler_menu")],
         [InlineKeyboardButton("بازگشت", "back_to_main")],
     )
+
+
+def qaa_menu():
+    return InlineKeyboard(
+        [InlineKeyboardButton("پرسش جدید", "qaa_save")],
+        [InlineKeyboardButton("شروع مسابقه", "start_qaa")],
+        [InlineKeyboardButton("پایان مسابقه", "end_qaa")],
+        [InlineKeyboardButton("بازگشت", "back_to_main")],
+    )
+
+
+def start_qaa_menu():
+    collections = qaa_collection_model.get_pos_collections(active=False)
+    keyboards = []
+    if collections:
+        for id, title in collections:
+            button = InlineKeyboardButton(title, f"start_qaa:{id}")
+            keyboards.append([button])
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+    else:
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+
+    return InlineKeyboard(*keyboards)
+
+def end_qaa_menu():
+    collections = qaa_collection_model.get_pos_collections(active=True)
+    keyboards = []
+    if collections:
+        for id, title in collections:
+            button = InlineKeyboardButton(title, f"end_qaa:{id}")
+            keyboards.append([button])
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+    else:
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+
+    return InlineKeyboard(*keyboards)
 
 
 def audios_menu():
@@ -72,7 +109,6 @@ def save_or_edit_menu():
         [InlineKeyboardButton("یادداشت", "note_menu")],
         [InlineKeyboardButton("کتاب", "book_menu")],
         [InlineKeyboardButton("کلیپ", "clip_menu")],
-        [InlineKeyboardButton("پرسش و پاسخ", "qaa")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
 

@@ -110,7 +110,7 @@ def test_safe_run_sync_success():
     def sample():
         return "ok"
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_qaa_loop()
     result = loop.run_until_complete(sample())
     assert result == "ok"
 
@@ -125,7 +125,7 @@ def test_safe_run_sync_error(mock_send, mock_error):
     def sample():
         raise ValueError("fail")
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_qaa_loop()
     result = loop.run_until_complete(sample())
 
     assert result == "error_post"
@@ -139,7 +139,7 @@ def test_safe_run_async_success():
     async def sample():
         return "async_ok"
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_qaa_loop()
     result = loop.run_until_complete(sample())
     assert result == "async_ok"
 
@@ -154,7 +154,7 @@ def test_safe_run_async_error(mock_send, mock_error):
     async def sample():
         raise RuntimeError("async_fail")
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_qaa_loop()
     result = loop.run_until_complete(sample())
 
     assert result == "error_post"
