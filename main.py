@@ -159,6 +159,12 @@ async def handle_qaa_question_text(message):
 
 
 # ❌ مرحله سوم – جواب غلط ۱
+@bale_bot.on_message(at_state("ENTER_QAA_TEXT"))
+async def handle_qaa_description_text(message):
+    await qaa_service.save_qaa_state_3(message.author, message.text)
+
+
+# ❌ مرحله چهارم – جواب غلط ۲
 @bale_bot.on_message(at_state("ENTER_QAA_QUESTION_1"))
 async def handle_qaa_wrong_1(message):
     await qaa_service.save_qaa_state_3(message.author, message.text)
