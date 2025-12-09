@@ -22,6 +22,13 @@ import asyncio
 load_dotenv()
 
 
+@bale_bot.on_callback_query(at_state("DOING_ANSWERS"))
+async def handle_qaa_answer_buttons(callback_query):
+    await qaa_service.handel_qaa_answers(
+        callback_query.author, callback_query.message.id, callback_query.data
+    )
+
+
 # 🎯 هندل کردن دکمه‌های callback
 @bale_bot.on_callback_query(private)
 async def reply_buttons(callback_query):
@@ -149,19 +156,13 @@ async def _(message):
 # ⏳ مرحله اول – دریافت عنوان کالکشن
 @bale_bot.on_message(at_state("ENTER_QAA_TITLE"))
 async def handle_qaa_title(message):
-    await qaa_service.save_qaa_state_1(message.author, message.text)
+    await qaa_service.save_qaa_title(message.author, message.text)
 
 
 # 📝 مرحله دوم – دریافت متن سوال
 @bale_bot.on_message(at_state("ENTER_QAA_TEXT"))
 async def handle_qaa_question_text(message):
     await qaa_service.save_qaa_state_2(message.author, message.text)
-
-
-# ❌ مرحله سوم – جواب غلط ۱
-@bale_bot.on_message(at_state("ENTER_QAA_TEXT"))
-async def handle_qaa_description_text(message):
-    await qaa_service.save_qaa_state_3(message.author, message.text)
 
 
 # ❌ مرحله چهارم – جواب غلط ۲
@@ -186,6 +187,21 @@ async def handle_qaa_wrong_3(message):
 @bale_bot.on_message(at_state("ENTER_QAA_CORRECT_OPTION"))
 async def handle_qaa_correct(message):
     await qaa_service.save_qaa_state_6(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_TITLE"))
+async def handle_qaa_edit_title(message):
+    await qaa_service.edit_qaa_title_2(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_DESCRIPTION"))
+async def handle_qaa_edit_description(message):
+    await qaa_service.edit_qaa_description_2(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_FIELD"))
+async def handle_qaa_field_edit(message):
+    await qaa_service.commit_edit_field(message.author, message.text)
 
 
 # 📥 دریافت پیام‌های گروهی

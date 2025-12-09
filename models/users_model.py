@@ -83,8 +83,6 @@ class GameResultsTable:
         )
 
 
-
-
 def create_results_table():
     with GameResultsTable() as db:
         db._create_table()

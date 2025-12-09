@@ -174,31 +174,54 @@ async def call_handler(callback_query):
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
         )
 
-    elif t == "qaa_save":
-        await bale_bot.send_message(ci, "عنوان پرسش رو وارد کنید")
+    elif t == "save_qaa":
+        await bale_bot.send_message(ci, "عنوان مسابقه جدید را ارسال کنید", back_menu())
         callback_query.author.set_state("ENTER_QAA_TITLE")
 
     elif t == "qaa_menu":
-        await bale_bot.edit_message_text(
-            ci, mi, "یکی از گزینه ها را انتخاب کنید", qaa_menu()
-        )
+        await bale_bot.edit_message_text(ci, mi, "منوی مسابقات", qaa_menu())
 
-    elif t == "start_qaa":
-        await bale_bot.edit_message_text(
-            ci, mi, "یکی از مسابقات را برای شروع آن انتخاب کنید", start_qaa_menu()
-        )
-
-    elif t == "end_qaa":
-        await bale_bot.edit_message_text(
-            ci, mi, "یکی از مسابقات را برای پایان دادن به آن انتخاب کنید", end_qaa_menu()
-        )
-
-    elif t.startswith("start_qaa:"):
+    elif t.startswith("index_qaa_collection:"):
         id = t.split(":")[1].strip()
-        qaa_collection_model.activate_collection(id)
-        await bale_bot.edit_message_text(ci, mi, "مسابقه فعال شد", back_menu())
+        id, title, description, is_activ = qaa_collection_model.get_collection(id)
+        status = "فعال" if is_activ == 1 else "غیرفعال"
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            f"عنوان:{title} \n\n توضیحات: {description}\n\nوضعیت: {status}",
+            index_qaa_question_menu(id),
+        )
 
-    elif t.startswith("end_qaa:"):
+    elif t.startswith("save_qaa_exam"):
         id = t.split(":")[1].strip()
-        qaa_collection_model.deactivate_collection(id)
-        await bale_bot.edit_message_text(ci, mi, "مسابقه غیر فعال شد", back_menu())
+        await qaa_service.save_qaa_state_1(callback_query.author, id)
+
+    elif t.startswith("action_qaa_collection_menu"):
+        _, id, title, description = t.split(":")
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            f"عنوان: {title} \n\nتوضیحات: {description} \n\n لطفا یک گزینه را انتخاب کنید",
+            index_action_qaa_collection_menu(id),
+        )
+
+    elif t.startswith("edit_qaa_title"):
+        id = t.split(":")[1].strip()
+        await qaa_service.edit_qaa_tilt_1(callback_query.author, id)
+
+    elif t.startswith("edit_qaa_description"):
+        id = t.split(":")[1].strip()
+        await qaa_service.edit_qaa_description_1(callback_query.author, id)
+
+    elif t.startswith("index_qaa_question"):
+        id = t.split(":")[1].strip()
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            "لطفا یک گزینه را برای ویرایش انتخاب کنید",
+            index_action_question_menu(id),
+        )
+
+    elif t.startswith("edit_field"):
+        _, field, qid = t.split(":")
+        await qaa_service.start_edit_field(callback_query.author, qid, field)
