@@ -10,6 +10,7 @@ from models import (
     notes_model,
     clips_model,
     qaa_collection_model,
+    qaa_result_model
 )
 from config.service_configs import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
@@ -24,11 +25,13 @@ async def call_handler(callback_query):
     # 🏠 بازگشت به منوی اصلی
     if t == "back_to_main":
         await bale_bot.edit_message_text(
-            ci, mi, "سلام! یکی از گزینه‌ها رو انتخاب کن:", main_menu(ui in admins)
+            ci, mi, "سلام! یکی از گزینه‌ها رو انتخاب کن:", main_menu(ui)
         )
 
-    elif t == "in_update":
-        pass
+    elif t == "qaa_collection_to_user":
+                await bale_bot.edit_message_text(
+            ci, mi, " یکی از مسابقات رو انتخاب کن تا اون رو انجام بدی", qaa_to_users_menu()
+                )
 
     # 📩 بازگشت به منوی پیام‌ها
     elif t == "back_to_message":
@@ -89,46 +92,54 @@ async def call_handler(callback_query):
     ارسال شده: {lecture['sent']}
     ارسال نشده: {lecture['unsent']}
 """
-        await bale_bot.edit_message_text(ci, mi, text, back_menu())
+        await bale_bot.edit_message_text(ci, mi, text, back_to_message_menu())
 
     # 🔄 ارسال خودکار
     elif t == "auto_send_hadith":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
         result = await hadith_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     elif t == "auto_send_note":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
         result = await note_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     elif t == "auto_send_clip":
         result = await clip_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     elif t == "auto_send_book":
         result = await book_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     # 🧾 ذخیره یادداشت
     elif t == "save_note":
         callback_query.author.set_state("INPUT_NUMBER_NOTE")
-        await bale_bot.send_message(ci, "شماره یادداشت رو وارد کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "شماره یادداشت رو وارد کنید", back_to_message_menu()
+        )
 
     # ✏️ ویرایش یادداشت
     elif t == "edit_note":
         callback_query.author.set_state("INPUT_EDIT_NUMBER_NOTE")
-        await bale_bot.send_message(ci, "شماره یادداشت رو وارد کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "شماره یادداشت رو وارد کنید", back_to_message_menu()
+        )
 
     # 📚 ذخیره کتاب
     elif t == "save_book":
         callback_query.author.set_state("INPUT_BOOK_TITLE")
-        await bale_bot.send_message(ci, "عنوان کتاب رو وارد کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "عنوان کتاب رو وارد کنید", back_to_message_menu()
+        )
 
     # ✏️ ویرایش کتاب
     elif t == "edit_book":
         callback_query.author.set_state("EDIT_BOOK_ID")
-        await bale_bot.send_message(ci, "شناسه کتاب رو وارد کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "شناسه کتاب رو وارد کنید", back_to_message_menu()
+        )
 
     # 📤 ارسال پیام به کانال
     elif t == "send_to_channel":
@@ -143,26 +154,34 @@ async def call_handler(callback_query):
     elif t.startswith("schaduler"):
         if t == "schaduler_on":
             set_schaduler_state(True)
-            await bale_bot.edit_message_text(ci, mi, "زمانبندی فعال شد", back_menu())
+            await bale_bot.edit_message_text(
+                ci, mi, "زمانبندی فعال شد", back_to_message_menu()
+            )
 
         elif t == "schaduler_off":
             set_schaduler_state(False)
-            await bale_bot.edit_message_text(ci, mi, "زمانبندی غیرفعال شد", back_menu())
+            await bale_bot.edit_message_text(
+                ci, mi, "زمانبندی غیرفعال شد", back_to_message_menu()
+            )
 
     elif t == "auto_send_lecture":
         result = await lecture_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     elif t == "add_and_edit":
         await bale_bot.edit_message_text(ci, mi, "وضعیت زمانبندی", save_or_edit_menu())
 
     elif t == "clip_menu":
         callback_query.author.set_state("INPUT_NEW_CLIP")
-        await bale_bot.edit_message_text(ci, mi, "کلیپ رو ارسال کنید", back_menu())
+        await bale_bot.edit_message_text(
+            ci, mi, "کلیپ رو ارسال کنید", back_to_message_menu()
+        )
 
     elif t.startswith("audio"):
         callback_query.author.set_state("INPUT_AUDIO_FILE")
-        await bale_bot.send_message(ci, "لطفا صوت جدید را وارد کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "لطفا صوت جدید را وارد کنید", back_to_message_menu()
+        )
         id = t.split(":")[1].strip()
         user_temp_data[ui] = {"audio_id": id}
 
@@ -171,11 +190,13 @@ async def call_handler(callback_query):
         for i in audio_name_list:
             audios_model.insert_audio(str(i), 0000000, "")
         await bale_bot.edit_message_text(
-            ci, mi, "مقادیر پیشفرض ایجاد شدند", back_menu()
+            ci, mi, "مقادیر پیشفرض ایجاد شدند", back_to_message_menu()
         )
 
     elif t == "save_qaa":
-        await bale_bot.send_message(ci, "عنوان مسابقه جدید را ارسال کنید", back_menu())
+        await bale_bot.send_message(
+            ci, "عنوان مسابقه جدید را ارسال کنید", back_to_message_menu()
+        )
         callback_query.author.set_state("ENTER_QAA_TITLE")
 
     elif t == "qaa_menu":
@@ -197,12 +218,12 @@ async def call_handler(callback_query):
         await qaa_service.save_qaa_state_1(callback_query.author, id)
 
     elif t.startswith("action_qaa_collection_menu"):
-        _, id, title, description = t.split(":")
+        _, id, title, description, is_active = t.split(":")
         await bale_bot.edit_message_text(
             ci,
             mi,
             f"عنوان: {title} \n\nتوضیحات: {description} \n\n لطفا یک گزینه را انتخاب کنید",
-            index_action_qaa_collection_menu(id),
+            index_action_qaa_collection_menu(id, is_active),
         )
 
     elif t.startswith("edit_qaa_title"):
@@ -225,3 +246,53 @@ async def call_handler(callback_query):
     elif t.startswith("edit_field"):
         _, field, qid = t.split(":")
         await qaa_service.start_edit_field(callback_query.author, qid, field)
+
+    elif t == "login":
+        await user_service.handel_login_button(callback_query.author, mi)
+
+    elif t.startswith("deactivate_qaa_collection"):
+        collection_id = t.split(":")[1].strip()
+        qaa_collection_model.deactivate_collection(collection_id)
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            "مسابقه مورد نظر غیر فعال شد",
+            back_to_message_menu(),
+        )
+
+    elif t.startswith("activate_qaa_collection"):
+        collection_id = t.split(":")[1].strip()
+        qaa_collection_model.activate_collection(collection_id)
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            "مسابقه مورد نظر فعال شد",
+            back_to_message_menu(),
+        )
+
+    elif t.startswith('qaa_doing_user'):
+        collection_id = t.split(":")[1].strip()
+        result = qaa_result_model.get_collection_results(collection_id)
+        for  _, user_id, _,_ in result :
+            if ui == user_id:
+                await bale_bot.edit_message_text(ci , mi , "شما این مسابقه را قبلا انجام داده اید" , back_to_main_menu())
+                return
+        
+        await qaa_service.do_qaa_conf(callback_query.author , mi , collection_id)
+    
+    elif t.startswith('qaa_answer'):
+        answer = t.split(":")[1].strip()
+        await qaa_service.handel_qaa_answers(callback_query.author , mi , answer)
+    
+    elif t.startswith('show_qaa_result'):
+        collection_id = t.split(":")[1].strip()
+        result =qaa_result_model.get_collection_results(collection_id)
+        text = "اسامی شرکت کنندگان \n\n"
+        for id, user_id, collection_id, is_winner in result :
+            _, user_id, name, _, _ =user_model.get_user(user_id) 
+            win = 'موفق' if is_winner == 1 else 'ناموفق'
+            text = text + f'{name} با شماره {user_id} در این مسابقه {win} بود\n'
+            
+        await bale_bot.edit_message_text(ci , mi ,text , back_to_message_menu())
+            
+            

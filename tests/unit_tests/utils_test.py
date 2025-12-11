@@ -25,7 +25,7 @@ from utils.keyboard import (
     send_menu,
     answer_y_n,
     edit_note_menu,
-    back_menu,
+    back_to_message_menu,
 )
 
 

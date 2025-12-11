@@ -1,11 +1,17 @@
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import audios_model, qaa_collection_model, qaa_questions_model
+from models import audios_model, qaa_collection_model, qaa_questions_model, user_model
 
 
-def main_menu(is_admin: bool):
-    rows = [[InlineKeyboardButton("در حال بروزرسانی", "in_update")]]
-    if is_admin:
-        rows.append([InlineKeyboardButton("مدیریت پیام‌ها", "back_to_message")])
+def main_menu(user_id):
+    person = user_model.get_user(user_id)
+    if not person:
+        rows = [[InlineKeyboardButton("ورود", "login")]]
+    else:
+        id, user_id, name, phone_number, is_admin = person
+        rows = [[InlineKeyboardButton("مسابقات", "qaa_collection_to_user")]]
+        if is_admin == 1:
+            rows.append([InlineKeyboardButton("مدیریت پیام‌ها", "back_to_message")])
+
     return InlineKeyboard(*rows)
 
 
@@ -21,15 +27,32 @@ def message_menu():
     )
 
 
+def qaa_to_users_menu():
+    collections = qaa_collection_model.get_pos_collections(active=True)
+    keyboards = []
+    if collections:
+        for id, title, description in collections:
+            button = InlineKeyboardButton(
+                title, f"qaa_doing_user:{id}"
+            )
+            keyboards.append([button])
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_main")])
+    else:
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_main")])
+
+    return InlineKeyboard(*keyboards)
+
+
 def qaa_menu():
-    collections = qaa_collection_model.get_pos_collections(active=False)
+    collections = qaa_collection_model.get_all_collections()
     keyboards = [
         [InlineKeyboardButton("مسابقه جدید", "save_qaa")],
     ]
     if collections:
-        for id, title, description in collections:
+        for id, title, description, is_active in collections:
             button = InlineKeyboardButton(
-                title, f"action_qaa_collection_menu:{id}:{title}:{description}"
+                title,
+                f"action_qaa_collection_menu:{id}:{title}:{description}:{is_active}",
             )
             keyboards.append([button])
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
@@ -39,8 +62,23 @@ def qaa_menu():
     return InlineKeyboard(*keyboards)
 
 
-def index_action_qaa_collection_menu(collection_id):
+def index_action_qaa_collection_menu(collection_id, is_active):
+    activate_button = (
+        [
+            InlineKeyboardButton(
+                "غیر فعال کردن", f"deactivate_qaa_collection:{collection_id}"
+            )
+        ]
+        if str(is_active) != '0'
+        else [
+            InlineKeyboardButton(
+                "فعال کردن", f"activate_qaa_collection:{collection_id}"
+            )
+        ]
+    )
     return InlineKeyboard(
+        activate_button,
+        [InlineKeyboardButton("مشاهده نتایج", f"show_qaa_result:{collection_id}")],
         [InlineKeyboardButton("ویرایش عنوان", f"edit_qaa_title:{collection_id}")],
         [
             InlineKeyboardButton(
@@ -170,5 +208,9 @@ def edit_note_menu():
     )
 
 
-def back_menu():
+def back_to_message_menu():
     return InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_message")])
+
+
+def back_to_main_menu():
+    return InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_main")])

@@ -8,13 +8,7 @@ from utils.keyboard import *
 from utils.response import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from config.service_configs import (
-    note_services,
-    general_services,
-    book_services,
-    qaa_service,
-    clip_services,
-)
+from config.service_configs import *
 import threading
 import callback_handler as call
 import asyncio
@@ -38,11 +32,10 @@ async def reply_buttons(callback_query):
 # 🚀 شروع ربات
 @bale_bot.on_message(command("start") & private)
 async def handle_start(message):
-    is_admin = message.author.id in admins
     await bale_bot.send_message(
         message.chat.id,
         "سلام! یکی از گزینه‌ها رو انتخاب کنید:",
-        main_menu(is_admin),
+        main_menu(message.author.id),
     )
 
 
@@ -85,7 +78,9 @@ async def send_to_channel(message):
     sent = await bale_bot.send_message(message.chat.id, "در حال ارسال ...")
     text = await general_services.send_message_to_channel(message, bale_bot)
     message.author.del_state()
-    await bale_bot.edit_message_text(sent.chat.id, sent.id, text, back_menu())
+    await bale_bot.edit_message_text(
+        sent.chat.id, sent.id, text, back_to_message_menu()
+    )
 
 
 @bale_bot.on_message(at_state("INPUT_BOOK_TITLE"))
@@ -202,6 +197,11 @@ async def handle_qaa_edit_description(message):
 @bale_bot.on_message(at_state("EDIT_QAA_FIELD"))
 async def handle_qaa_field_edit(message):
     await qaa_service.commit_edit_field(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("LOGIN"))
+async def handel_login(message):
+    await user_service.insert_user(message.author, message.text)
 
 
 # 📥 دریافت پیام‌های گروهی

@@ -17,13 +17,17 @@ class QAAService:
         self.user_temp_data[author.id] = {}
         if self.model_collection.collection_exists(text):
             await self.bot.send_message(
-                author.id, "شما آن را دارید\nلطفا عنوانی جدید وارد کنید", back_menu()
+                author.id,
+                "شما آن را دارید\nلطفا عنوانی جدید وارد کنید",
+                back_to_message_menu(),
             )
             return
 
         else:
             collection_id = self.model_collection.add_collection(text)
-            await self.bot.send_message(author.id, "با موفقیت ذخیره شد", back_menu())
+            await self.bot.send_message(
+                author.id, "با موفقیت ذخیره شد", back_to_message_menu()
+            )
             return
 
     async def save_qaa_state_1(self, author, id):
@@ -66,32 +70,40 @@ class QAAService:
         author.del_state()
         self.user_temp_data.pop(author.id, None)
         await self.bot.send_message(
-            author.id, "پرسش و پاسخ با موفقیت ثبت شد", back_menu()
+            author.id, "پرسش و پاسخ با موفقیت ثبت شد", back_to_message_menu()
         )
 
     # edit qaa
 
     async def edit_qaa_tilt_1(self, author, collection_id):
         self.user_temp_data[author.id] = {"collection_id": collection_id}
-        await self.bot.send_message(author.id, "متن جدید را وارد کنید", back_menu())
+        await self.bot.send_message(
+            author.id, "متن جدید را وارد کنید", back_to_message_menu()
+        )
         author.set_state("EDIT_QAA_TITLE")
 
     async def edit_qaa_title_2(self, author, text):
         collection_id = self.user_temp_data[author.id]["collection_id"]
         self.model_collection.update_collection_title(collection_id, text)
-        await self.bot.send_message(author.id, "با موفقیت تغییر کرد", back_menu())
+        await self.bot.send_message(
+            author.id, "با موفقیت تغییر کرد", back_to_message_menu()
+        )
         self.user_temp_data.pop(author.id, None)
         author.del_state()
 
     async def edit_qaa_description_1(self, author, collection_id):
         self.user_temp_data[author.id] = {"collection_id": collection_id}
-        await self.bot.send_message(author.id, "متن جدید را وارد کنید", back_menu())
+        await self.bot.send_message(
+            author.id, "متن جدید را وارد کنید", back_to_message_menu()
+        )
         author.set_state("EDIT_QAA_DESCRIPTION")
 
     async def edit_qaa_description_2(self, author, text):
         collection_id = self.user_temp_data[author.id]["collection_id"]
         self.model_collection.update_collection_description(collection_id, text)
-        await self.bot.send_message(author.id, "با موفقیت تغییر کرد", back_menu())
+        await self.bot.send_message(
+            author.id, "با موفقیت تغییر کرد", back_to_message_menu()
+        )
         self.user_temp_data.pop(author.id, None)
         author.del_state()
 
@@ -117,10 +129,10 @@ class QAAService:
         ) = self.model_question.get_question(collection_id, 1)
         buttons = []
         for i in (option1, option2, option3):
-            button = InlineKeyboardButton(str(i), f"bad")
+            button = InlineKeyboardButton(str(i), f"qaa_answer:bad")
             buttons.append([button])
 
-        button = InlineKeyboardButton(str(correct), f"good")
+        button = InlineKeyboardButton(str(correct), f"qaa_answer:good")
         buttons.append([button])
 
         random.shuffle(buttons)
@@ -130,12 +142,13 @@ class QAAService:
 
     async def handel_qaa_answers(self, author, message_id, answer):
         index = self.user_temp_data[author.id]["question_index"]
+        collection_id = self.user_temp_data[author.id]['collection_id']
         self.user_temp_data[author.id][f"answer:{index}"] = answer
         if index < self.user_temp_data[author.id]["max_index"]:
             self.user_temp_data[author.id]["question_index"] = index + 1
             (
                 id,
-                collection_id,
+                _,
                 question_index,
                 question_text,
                 option1,
@@ -145,10 +158,10 @@ class QAAService:
             ) = self.model_question.get_question(collection_id, index + 1)
             buttons = []
             for i in (option1, option2, option3):
-                button = InlineKeyboardButton(str(i), f"bad")
+                button = InlineKeyboardButton(str(i), f"qaa_answer:bad")
                 buttons.append([button])
 
-            button = InlineKeyboardButton(str(correct), f"good")
+            button = InlineKeyboardButton(str(correct), f"qaa_answer:good")
             buttons.append([button])
 
             random.shuffle(buttons)
@@ -165,23 +178,23 @@ class QAAService:
             ]
             all_good = all(x == "good" for x in answers)
             if all_good:
-                self.model_user.add_result(collection_id, author.id, 1)
+                self.model_user.add_result(author.id , collection_id , 1)
             else:
-                self.model_user.add_result(collection_id, author.id, 0)
+                self.model_user.add_result(author.id , collection_id, 0)
 
             self.user_temp_data.pop(author.id, None)
+            author.del_state()
             await self.bot.edit_message_text(
                 author.id,
                 message_id,
-                "سوالات به پایان رسید ممنون از شرکت شما\nنتیجه به شما اطلاع رسانی میشود",
-                InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_main")]),
+                "سوالات به پایان رسید ممنون از شرکت شما\nنتیجه به شما اطلاع رسانی میشود", back_to_main_menu()
             )
 
     async def start_edit_field(self, author, question_id, field):
         self.user_temp_data[author.id] = {"question_id": question_id, "field": field}
 
         await self.bot.send_message(
-            author.id, f"متن جدید برای «{field}» را وارد کنید:", back_menu()
+            author.id, f"متن جدید برای «{field}» را وارد کنید:", back_to_message_menu()
         )
 
         author.set_state("EDIT_QAA_FIELD")
@@ -207,7 +220,9 @@ class QAAService:
         if update_func:
             update_func(qid, new_value)
 
-        await self.bot.send_message(author.id, "با موفقیت تغییر کرد ✔️", back_menu())
+        await self.bot.send_message(
+            author.id, "با موفقیت تغییر کرد ✔️", back_to_message_menu()
+        )
 
         # پاکسازی
         self.user_temp_data.pop(author.id, None)

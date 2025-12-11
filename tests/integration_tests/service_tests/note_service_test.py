@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from services.note_service import NoteService, back_menu
+from services.note_service import NoteService, back_to_message_menu
 
 
 @pytest.mark.asyncio

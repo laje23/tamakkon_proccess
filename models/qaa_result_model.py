@@ -22,7 +22,7 @@ class GameResultsTable:
             """
             CREATE TABLE IF NOT EXISTS game_results (
                 id SERIAL PRIMARY KEY,
-                user_id BIGINT NOT NULL,
+                user_id BIGINT NOT NULL REFERENCES users(user_id),
                 collection_id INTEGER NOT NULL REFERENCES collections(id),
                 is_winner SMALLINT NOT NULL CHECK (is_winner IN (0, 1))
             );
