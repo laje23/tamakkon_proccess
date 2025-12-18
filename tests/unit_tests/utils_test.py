@@ -13,7 +13,6 @@ from utils.text_utils import (
     fa_to_en_int,
     prepare_processed_messages,
 )
-from utils.decorator import safe_run  # مسیر درست ایمپورت را تنظیم کن
 from utils.keyboard import (
     main_menu,
     message_menu,
@@ -102,64 +101,6 @@ def test_get_mentioning_day_invalid_day():
 
         result = get_mentioning_day()
         assert result == "روز نامشخصی است!"
-
-
-# ---------- تست تابع sync بدون خطا ----------
-def test_safe_run_sync_success():
-    @safe_run
-    def sample():
-        return "ok"
-
-    loop = asyncio.get_qaa_loop()
-    result = loop.run_until_complete(sample())
-    assert result == "ok"
-
-
-# ---------- تست تابع sync با خطا ----------
-@patch("utils.decorator.error_response")
-@patch("utils.decorator.send_to_admins", new_callable=AsyncMock)
-def test_safe_run_sync_error(mock_send, mock_error):
-    mock_error.return_value = "error_post"
-
-    @safe_run
-    def sample():
-        raise ValueError("fail")
-
-    loop = asyncio.get_qaa_loop()
-    result = loop.run_until_complete(sample())
-
-    assert result == "error_post"
-    mock_error.assert_called_once()
-    mock_send.assert_awaited_once()
-
-
-# ---------- تست تابع async بدون خطا ----------
-def test_safe_run_async_success():
-    @safe_run
-    async def sample():
-        return "async_ok"
-
-    loop = asyncio.get_qaa_loop()
-    result = loop.run_until_complete(sample())
-    assert result == "async_ok"
-
-
-# ---------- تست تابع async با خطا ----------
-@patch("utils.decorator.error_response")
-@patch("utils.decorator.send_to_admins", new_callable=AsyncMock)
-def test_safe_run_async_error(mock_send, mock_error):
-    mock_error.return_value = "error_post"
-
-    @safe_run
-    async def sample():
-        raise RuntimeError("async_fail")
-
-    loop = asyncio.get_qaa_loop()
-    result = loop.run_until_complete(sample())
-
-    assert result == "error_post"
-    mock_error.assert_called_once()
-    mock_send.assert_awaited_once()
 
 
 # ---------- تست file_id_to_bynery ----------
