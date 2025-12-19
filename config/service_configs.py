@@ -8,7 +8,12 @@ from services.general_service import GeneralService
 from services.lecture_service import LectureService
 from services.qaa_service import QAAService
 from services.user_service import UserService
-from models import qaa_collection_model, qaa_questions_model, qaa_result_model, user_model
+from models import (
+    qaa_collection_model,
+    qaa_questions_model,
+    qaa_result_model,
+    user_model,
+)
 
 book_services = BookService(user_temp_data, bale_bot, eitaa_bot)
 hadith_services = HadithService(bale_bot, eitaa_bot)

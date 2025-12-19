@@ -142,7 +142,7 @@ class QAAService:
 
     async def handel_qaa_answers(self, author, message_id, answer):
         index = self.user_temp_data[author.id]["question_index"]
-        collection_id = self.user_temp_data[author.id]['collection_id']
+        collection_id = self.user_temp_data[author.id]["collection_id"]
         self.user_temp_data[author.id][f"answer:{index}"] = answer
         if index < self.user_temp_data[author.id]["max_index"]:
             self.user_temp_data[author.id]["question_index"] = index + 1
@@ -178,16 +178,17 @@ class QAAService:
             ]
             all_good = all(x == "good" for x in answers)
             if all_good:
-                self.model_user.add_result(author.id , collection_id , 1)
+                self.model_user.add_result(author.id, collection_id, 1)
             else:
-                self.model_user.add_result(author.id , collection_id, 0)
+                self.model_user.add_result(author.id, collection_id, 0)
 
             self.user_temp_data.pop(author.id, None)
             author.del_state()
             await self.bot.edit_message_text(
                 author.id,
                 message_id,
-                "سوالات به پایان رسید ممنون از شرکت شما\nنتیجه به شما اطلاع رسانی میشود", back_to_main_menu()
+                "سوالات به پایان رسید ممنون از شرکت شما\nنتیجه به شما اطلاع رسانی میشود",
+                back_to_main_menu(),
             )
 
     async def start_edit_field(self, author, question_id, field):

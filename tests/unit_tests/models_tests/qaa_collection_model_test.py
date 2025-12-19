@@ -18,6 +18,7 @@ from models.qaa_collection_model import (
     get_pos_collections,
 )
 
+
 # ---------- Fixture: Mock اتصال DB ----------
 @pytest.fixture
 def mock_db():
@@ -55,7 +56,6 @@ def test_add_collection(mock_db):
     assert params == ("کالکشن تست", "توضیح")
     assert collection_id == 5
     conn.commit.assert_called_once()
-
 
 
 # ---------- تست get all ----------

@@ -32,9 +32,7 @@ def qaa_to_users_menu():
     keyboards = []
     if collections:
         for id, title, description in collections:
-            button = InlineKeyboardButton(
-                title, f"qaa_doing_user:{id}"
-            )
+            button = InlineKeyboardButton(title, f"qaa_doing_user:{id}")
             keyboards.append([button])
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_main")])
     else:
@@ -69,7 +67,7 @@ def index_action_qaa_collection_menu(collection_id, is_active):
                 "غیر فعال کردن", f"deactivate_qaa_collection:{collection_id}"
             )
         ]
-        if str(is_active) != '0'
+        if str(is_active) != "0"
         else [
             InlineKeyboardButton(
                 "فعال کردن", f"activate_qaa_collection:{collection_id}"

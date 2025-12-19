@@ -13,6 +13,7 @@ from models.user_model import (
     delete_user,
 )
 
+
 # ---------- Fixture برای mock اتصال DB ----------
 @pytest.fixture
 def mock_db():
@@ -97,6 +98,7 @@ def test_set_admin(mock_db):
     assert re.search(r"UPDATE\s+users\s+SET\s+is_admin", sql)
     assert params == (1, 1234)
     conn.commit.assert_called_once()
+
 
 # ---------- تست delete_user ----------
 def test_delete_user(mock_db):

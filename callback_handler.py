@@ -10,7 +10,7 @@ from models import (
     notes_model,
     clips_model,
     qaa_collection_model,
-    qaa_result_model
+    qaa_result_model,
 )
 from config.service_configs import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
@@ -29,9 +29,12 @@ async def call_handler(callback_query):
         )
 
     elif t == "qaa_collection_to_user":
-                await bale_bot.edit_message_text(
-            ci, mi, " یکی از مسابقات رو انتخاب کن تا اون رو انجام بدی", qaa_to_users_menu()
-                )
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            " یکی از مسابقات رو انتخاب کن تا اون رو انجام بدی",
+            qaa_to_users_menu(),
+        )
 
     # 📩 بازگشت به منوی پیام‌ها
     elif t == "back_to_message":
@@ -270,29 +273,29 @@ async def call_handler(callback_query):
             back_to_message_menu(),
         )
 
-    elif t.startswith('qaa_doing_user'):
+    elif t.startswith("qaa_doing_user"):
         collection_id = t.split(":")[1].strip()
         result = qaa_result_model.get_collection_results(collection_id)
-        for  _, user_id, _,_ in result :
+        for _, user_id, _, _ in result:
             if ui == user_id:
-                await bale_bot.edit_message_text(ci , mi , "شما این مسابقه را قبلا انجام داده اید" , back_to_main_menu())
+                await bale_bot.edit_message_text(
+                    ci, mi, "شما این مسابقه را قبلا انجام داده اید", back_to_main_menu()
+                )
                 return
-        
-        await qaa_service.do_qaa_conf(callback_query.author , mi , collection_id)
-    
-    elif t.startswith('qaa_answer'):
+
+        await qaa_service.do_qaa_conf(callback_query.author, mi, collection_id)
+
+    elif t.startswith("qaa_answer"):
         answer = t.split(":")[1].strip()
-        await qaa_service.handel_qaa_answers(callback_query.author , mi , answer)
-    
-    elif t.startswith('show_qaa_result'):
+        await qaa_service.handel_qaa_answers(callback_query.author, mi, answer)
+
+    elif t.startswith("show_qaa_result"):
         collection_id = t.split(":")[1].strip()
-        result =qaa_result_model.get_collection_results(collection_id)
+        result = qaa_result_model.get_collection_results(collection_id)
         text = "اسامی شرکت کنندگان \n\n"
-        for id, user_id, collection_id, is_winner in result :
-            _, user_id, name, _, _ =user_model.get_user(user_id) 
-            win = 'موفق' if is_winner == 1 else 'ناموفق'
-            text = text + f'{name} با شماره {user_id} در این مسابقه {win} بود\n'
-            
-        await bale_bot.edit_message_text(ci , mi ,text , back_to_message_menu())
-            
-            
+        for id, user_id, collection_id, is_winner in result:
+            _, user_id, name, _, _ = user_model.get_user(user_id)
+            win = "موفق" if is_winner == 1 else "ناموفق"
+            text = text + f"{name} با شماره {user_id} در این مسابقه {win} بود\n"
+
+        await bale_bot.edit_message_text(ci, mi, text, back_to_message_menu())
