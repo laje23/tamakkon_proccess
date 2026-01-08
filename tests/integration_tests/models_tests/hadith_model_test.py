@@ -25,7 +25,9 @@ def test_create_table(mock_conn_cursor):
         db = HadithTableManager()
         db.create_table()
         mock_cursor.execute.assert_called_once()
-        assert "CREATE TABLE IF NOT EXISTS hadith" in mock_cursor.execute.call_args[0][0]
+        assert (
+            "CREATE TABLE IF NOT EXISTS hadith" in mock_cursor.execute.call_args[0][0]
+        )
 
 
 def test_insert_row(mock_conn_cursor):
@@ -59,8 +61,8 @@ def test_select_unsent(mock_conn_cursor):
         mock_cursor.execute.assert_called_once()
         assert "SELECT content, id FROM hadith" in mock_cursor.execute.call_args[0][0]
         assert result == ("Hadith text", 1)
-        
-        
+
+
 def test_update_sent_to_1(mock_conn_cursor):
     mock_conn, mock_cursor = mock_conn_cursor
     with patch("models.hadith_model.get_connection", return_value=mock_conn):

@@ -4,7 +4,7 @@ from services.base_service import BaseService
 from utils.response import success_response, error_response
 from utils.decorator import safe_run
 from models import books_model
-from utils.keyboard import back_menu
+from utils.keyboard import back_to_message_menu
 
 
 class BookService(BaseService):
@@ -101,11 +101,13 @@ class BookService(BaseService):
                 excerpt=excerpt,
             )
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["book_saved"], back_menu()
+                message.chat.id, self.MESSAGES["book_saved"], back_to_message_menu()
             )
         except Exception as e:
             await self.bale_bot.send_message(
-                message.chat.id, f"{self.MESSAGES['book_error']}{str(e)}", back_menu()
+                message.chat.id,
+                f"{self.MESSAGES['book_error']}{str(e)}",
+                back_to_message_menu(),
             )
 
         self.user_temp_data.pop(user_id, None)
@@ -116,14 +118,14 @@ class BookService(BaseService):
         book_id_text = message.text.strip()
         if not book_id_text.isdigit():
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["only_number"], back_menu()
+                message.chat.id, self.MESSAGES["only_number"], back_to_message_menu()
             )
             return
 
         book_id = int(book_id_text)
         if not self.db.check_book_exists(book_id):
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["book_not_found"], back_menu()
+                message.chat.id, self.MESSAGES["book_not_found"], back_to_message_menu()
             )
             message.author.del_state()
             return
@@ -131,7 +133,9 @@ class BookService(BaseService):
         book = self.db.get_unsent_book()
         if not book or book["id"] != book_id:
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["book_already_sent"], back_menu()
+                message.chat.id,
+                self.MESSAGES["book_already_sent"],
+                back_to_message_menu(),
             )
             message.author.del_state()
             return
@@ -186,13 +190,13 @@ class BookService(BaseService):
                 excerpt=excerpt,
             )
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["book_edited"], back_menu()
+                message.chat.id, self.MESSAGES["book_edited"], back_to_message_menu()
             )
         except Exception as e:
             await self.bale_bot.send_message(
                 message.chat.id,
                 f"{self.MESSAGES['book_edit_error']}{str(e)}",
-                back_menu(),
+                back_to_message_menu(),
             )
 
         self.user_temp_data.pop(user_id, None)

@@ -1,6 +1,12 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from models.clips_model import ClipsTable, save_clip, mark_clip_sent, get_status, auto_return_file_id
+from models.clips_model import (
+    ClipsTable,
+    save_clip,
+    mark_clip_sent,
+    get_status,
+    auto_return_file_id,
+)
 
 
 @pytest.fixture
@@ -55,7 +61,10 @@ def test_select_auto_file_id(mock_conn_cursor):
         result = db.select_auto_file_id()
 
         mock_cursor.execute.assert_called_once()
-        assert "SELECT id, file_id, caption FROM clips" in mock_cursor.execute.call_args[0][0]
+        assert (
+            "SELECT id, file_id, caption FROM clips"
+            in mock_cursor.execute.call_args[0][0]
+        )
         assert result == (1, "file_abc", "test_caption")
 
 

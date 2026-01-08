@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from services.lecture_service import LectureService
 from utils.response import success_response
 
+
 @pytest.fixture
 def mock_bots():
     bale_bot = MagicMock()
@@ -16,6 +17,7 @@ def mock_bots():
     eitaa_bot.send_message = AsyncMock()
     return bale_bot, eitaa_bot
 
+
 @pytest.mark.asyncio
 @patch("services.lecture_service.file_id_to_bynery", new_callable=AsyncMock)
 async def test_auto_send_success(mock_file, mock_bots):
@@ -26,7 +28,9 @@ async def test_auto_send_success(mock_file, mock_bots):
     lecture_id = 101
     file_id = "file123"
     caption = "lecture caption"
-    service.db.auto_return_lecture = MagicMock(return_value=(lecture_id, file_id, caption))
+    service.db.auto_return_lecture = MagicMock(
+        return_value=(lecture_id, file_id, caption)
+    )
     service.db.mark_lecture_sent = MagicMock()
 
     # ماک فایل باینری
@@ -40,7 +44,9 @@ async def test_auto_send_success(mock_file, mock_bots):
 
     service.db.auto_return_lecture.assert_called_once()
     mock_file.assert_awaited_once_with(file_id, bale_bot)
-    service.send_media.assert_awaited_once_with("audio", bin_mock, caption + "\n\n#سخنرانی\n@tamakkon_ir")
+    service.send_media.assert_awaited_once_with(
+        "audio", bin_mock, caption + "\n\n#سخنرانی\n@tamakkon_ir"
+    )
     service.db.mark_lecture_sent.assert_called_once_with(lecture_id)
     assert result["message"] == f"سخنرانی با شناسه {lecture_id} ارسال شد"
 
@@ -58,4 +64,3 @@ async def test_auto_send_no_lecture(mock_bots):
     service.db.auto_return_lecture.assert_called_once()
     assert result["success"] is False
     assert "هیچ سخنرانی آماده ارسال نیست" in result["error_message"]
-

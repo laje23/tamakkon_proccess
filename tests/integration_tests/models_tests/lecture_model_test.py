@@ -24,7 +24,9 @@ def test_create_table(mock_conn_cursor):
         db = LecturesTable()
         db._create_table()
         mock_cursor.execute.assert_called_once()
-        assert "CREATE TABLE IF NOT EXISTS lectures" in mock_cursor.execute.call_args[0][0]
+        assert (
+            "CREATE TABLE IF NOT EXISTS lectures" in mock_cursor.execute.call_args[0][0]
+        )
 
 
 def test_insert_row(mock_conn_cursor):
