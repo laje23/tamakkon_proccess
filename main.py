@@ -8,18 +8,19 @@ from utils.keyboard import *
 from utils.response import *
 from dotenv import load_dotenv
 from schaduler import scheduled_messages
-from config.service_configs import (
-    note_services,
-    general_services,
-    book_services,
-    clip_services,
-)
+from config.service_configs import *
 import threading
 import callback_handler as call
 import asyncio
 
 load_dotenv()
 
+
+@bale_bot.on_callback_query(at_state("DOING_ANSWERS"))
+async def handle_qaa_answer_buttons(callback_query):
+    await qaa_service.handel_qaa_answers(
+        callback_query.author, callback_query.message.id, callback_query.data
+    )
 
 
 # 🎯 هندل کردن دکمه‌های callback
@@ -31,11 +32,10 @@ async def reply_buttons(callback_query):
 # 🚀 شروع ربات
 @bale_bot.on_message(command("start") & private)
 async def handle_start(message):
-    is_admin = message.author.id in admins
     await bale_bot.send_message(
         message.chat.id,
         "سلام! یکی از گزینه‌ها رو انتخاب کنید:",
-        main_menu(is_admin),
+        main_menu(message.author.id),
     )
 
 
@@ -78,7 +78,9 @@ async def send_to_channel(message):
     sent = await bale_bot.send_message(message.chat.id, "در حال ارسال ...")
     text = await general_services.send_message_to_channel(message, bale_bot)
     message.author.del_state()
-    await bale_bot.edit_message_text(sent.chat.id, sent.id, text, back_menu())
+    await bale_bot.edit_message_text(
+        sent.chat.id, sent.id, text, back_to_message_menu()
+    )
 
 
 @bale_bot.on_message(at_state("INPUT_BOOK_TITLE"))
@@ -144,6 +146,62 @@ async def _(message):
 @bale_bot.on_message(at_state("INPUT_AUDIO_FILE"))
 async def _(message):
     await clip_services.save_new_audio(message)
+
+
+# ⏳ مرحله اول – دریافت عنوان کالکشن
+@bale_bot.on_message(at_state("ENTER_QAA_TITLE"))
+async def handle_qaa_title(message):
+    await qaa_service.save_qaa_title(message.author, message.text)
+
+
+# 📝 مرحله دوم – دریافت متن سوال
+@bale_bot.on_message(at_state("ENTER_QAA_TEXT"))
+async def handle_qaa_question_text(message):
+    await qaa_service.save_qaa_state_2(message.author, message.text)
+
+
+# ❌ مرحله چهارم – جواب غلط ۲
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_1"))
+async def handle_qaa_wrong_1(message):
+    await qaa_service.save_qaa_state_3(message.author, message.text)
+
+
+# ❌ مرحله چهارم – جواب غلط ۲
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_2"))
+async def handle_qaa_wrong_2(message):
+    await qaa_service.save_qaa_state_4(message.author, message.text)
+
+
+# ❌ مرحله پنجم – جواب غلط ۳
+@bale_bot.on_message(at_state("ENTER_QAA_QUESTION_3"))
+async def handle_qaa_wrong_3(message):
+    await qaa_service.save_qaa_state_5(message.author, message.text)
+
+
+# ✅ مرحله ششم – جواب درست
+@bale_bot.on_message(at_state("ENTER_QAA_CORRECT_OPTION"))
+async def handle_qaa_correct(message):
+    await qaa_service.save_qaa_state_6(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_TITLE"))
+async def handle_qaa_edit_title(message):
+    await qaa_service.edit_qaa_title_2(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_DESCRIPTION"))
+async def handle_qaa_edit_description(message):
+    await qaa_service.edit_qaa_description_2(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("EDIT_QAA_FIELD"))
+async def handle_qaa_field_edit(message):
+    await qaa_service.commit_edit_field(message.author, message.text)
+
+
+@bale_bot.on_message(at_state("LOGIN"))
+async def handel_login(message):
+    await user_service.insert_user(message.author, message.text)
 
 
 # 📥 دریافت پیام‌های گروهی

@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from services.hadith_service import HadithService
 from utils.response import success_response, error_response
 
+
 @pytest.fixture
 def mock_bots():
     bale_bot = MagicMock()
@@ -10,6 +11,7 @@ def mock_bots():
     bale_bot.send_message = AsyncMock()
     eitaa_bot.send_message = AsyncMock()
     return bale_bot, eitaa_bot
+
 
 @pytest.mark.asyncio
 @patch("services.hadith_service.process_hadith_message")
@@ -24,7 +26,9 @@ async def test_auto_send_success(mock_process, mock_bots):
     service.db.mark_sent = MagicMock()
 
     # ماک process_hadith_message
-    mock_process.side_effect = lambda c, i, eitaa: f"text_{'eitaa' if eitaa else 'bale'}"
+    mock_process.side_effect = (
+        lambda c, i, eitaa: f"text_{'eitaa' if eitaa else 'bale'}"
+    )
 
     # ماک send_text
     service.send_text = AsyncMock()
@@ -38,6 +42,7 @@ async def test_auto_send_success(mock_process, mock_bots):
     service.db.mark_sent.assert_called_once_with(hadith_id)
 
     assert result["message"] == f"حدیث با شناسه {hadith_id} ارسال شد"
+
 
 @pytest.mark.asyncio
 async def test_auto_send_no_content(mock_bots):

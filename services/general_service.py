@@ -5,7 +5,7 @@ from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
 from models import audios_model
-from utils.keyboard import back_menu
+from utils.keyboard import back_to_message_menu
 import asyncio
 
 
@@ -79,12 +79,20 @@ class GeneralService:
         if x := await get_media_bytes(message, bot):
             bin_file, typefile = x
             if typefile == "photo":
-                await self.bale_bot.send_photo(self.bale_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_photo(
+                    self.bale_channel_id, bin_file, message.caption
+                )
             elif typefile == "video":
-                await self.bale_bot.send_video(self.bale_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_video(
+                    self.bale_channel_id, bin_file, message.caption
+                )
             elif typefile == "audio":
-                await self.bale_bot.send_audio(self.bale_channel_id, bin_file, message.caption)
-            await self.eitaa_bot.send_file(self.eitaa_channel_id, bin_file, message.caption)
+                await self.bale_bot.send_audio(
+                    self.bale_channel_id, bin_file, message.caption
+                )
+            await self.eitaa_bot.send_file(
+                self.eitaa_channel_id, bin_file, message.caption
+            )
             return success_response("پیام ارسال شد")
         else:
             text = message.text or message.caption
@@ -101,15 +109,17 @@ class GeneralService:
                 caption = message.caption or ""
                 self.audio_model.update_row_by_id(id, file_id, caption)
                 await self.bale_bot.send_message(
-                    message.chat.id, "با موفقیت تغییر کرد ", back_menu()
+                    message.chat.id, "با موفقیت تغییر کرد ", back_to_message_menu()
                 )
                 message.author.del_state()
                 self.user_temp_data.pop(user_id, None)
             else:
                 await self.bale_bot.send_message(
-                    message.chat.id, "فرمت ارسال شده نامعتبر است", back_menu()
+                    message.chat.id,
+                    "فرمت ارسال شده نامعتبر است",
+                    back_to_message_menu(),
                 )
         else:
             await self.bale_bot.send_message(
-                message.chat.id, "مشکلی در دریافت ایدی بود ", back_menu()
+                message.chat.id, "مشکلی در دریافت ایدی بود ", back_to_message_menu()
             )

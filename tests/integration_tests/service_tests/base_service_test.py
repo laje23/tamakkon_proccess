@@ -41,7 +41,9 @@ async def test_send_media_photo_calls_correct_methods(mock_bots):
     result = await service.send_media("photo", "file123", "cap text")
 
     bale_bot.send_photo.assert_awaited_once_with(bale_channel_id, "file123", "cap text")
-    eitaa_bot.send_file.assert_awaited_once_with(eitaa_channel_id, "file123", "cap text")
+    eitaa_bot.send_file.assert_awaited_once_with(
+        eitaa_channel_id, "file123", "cap text"
+    )
     assert result["message"] == "photo ارسال شد"
 
 
@@ -52,8 +54,12 @@ async def test_send_media_video_calls_correct_methods(mock_bots):
 
     result = await service.send_media("video", "vid123", "video caption")
 
-    bale_bot.send_video.assert_awaited_once_with(bale_channel_id, "vid123", "video caption")
-    eitaa_bot.send_file.assert_awaited_once_with(eitaa_channel_id, "vid123", "video caption")
+    bale_bot.send_video.assert_awaited_once_with(
+        bale_channel_id, "vid123", "video caption"
+    )
+    eitaa_bot.send_file.assert_awaited_once_with(
+        eitaa_channel_id, "vid123", "video caption"
+    )
     assert result["message"] == "video ارسال شد"
 
 
@@ -64,8 +70,12 @@ async def test_send_media_audio_calls_correct_methods(mock_bots):
 
     result = await service.send_media("audio", "aud123", "audio caption")
 
-    bale_bot.send_audio.assert_awaited_once_with(bale_channel_id, "aud123", "audio caption")
-    eitaa_bot.send_file.assert_awaited_once_with(eitaa_channel_id, "aud123", "audio caption")
+    bale_bot.send_audio.assert_awaited_once_with(
+        bale_channel_id, "aud123", "audio caption"
+    )
+    eitaa_bot.send_file.assert_awaited_once_with(
+        eitaa_channel_id, "aud123", "audio caption"
+    )
     assert result["message"] == "audio ارسال شد"
 
 
@@ -77,5 +87,5 @@ async def test_send_media_invalid_returns_error(mock_bots):
     # وقتی media_type نامعتبر است، safe_run باید error response بدهد
     result = await service.send_media("invalid_type", "file123")
 
-    assert result['success'] is False  
+    assert result["success"] is False
     assert "فرمت فایل نا معتبر" in result["error_message"]

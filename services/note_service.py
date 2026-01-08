@@ -7,7 +7,7 @@ from models import (
 )  # فرض می‌کنیم notes_model شامل توابع و کلاس‌های NoteTableManager و TextPartManager باشد
 from utils.text_utils import prepare_processed_messages, fa_to_en_int
 from utils.media import file_id_to_bynery
-from utils.keyboard import back_menu
+from utils.keyboard import back_to_message_menu
 
 
 class NoteService(BaseService):
@@ -90,7 +90,7 @@ class NoteService(BaseService):
         note_number = fa_to_en_int(message.text)
         if note_number <= 0:
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["invalid_number"], back_menu()
+                message.chat.id, self.MESSAGES["invalid_number"], back_to_message_menu()
             )
             return
 
@@ -98,7 +98,7 @@ class NoteService(BaseService):
             await self.bale_bot.send_message(
                 message.chat.id,
                 self.MESSAGES["note_exists"] + "\n" + self.MESSAGES["enter_note_text"],
-                back_menu(),
+                back_to_message_menu(),
             )
             return
         self.db.save_note(note_number, "", "")
@@ -153,7 +153,7 @@ class NoteService(BaseService):
 
         if state != "INPUT_TEXT_NOTE":
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["invalid_number"], back_menu()
+                message.chat.id, self.MESSAGES["invalid_number"], back_to_message_menu()
             )
             return
 
@@ -191,7 +191,7 @@ class NoteService(BaseService):
             self.db.edit_media(note_id, file_id, media_type)  # فرضاً این متد رو داری
 
             await self.bale_bot.send_message(
-                message.chat.id, self.MESSAGES["note_saved"], back_menu()
+                message.chat.id, self.MESSAGES["note_saved"], back_to_message_menu()
             )
 
             self.user_temp_data.pop(user_id, None)

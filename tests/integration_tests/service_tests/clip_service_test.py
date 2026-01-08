@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, AsyncMock, patch
 from services.clip_service import ClipService
 from utils.response import success_response
 
+
 @pytest.fixture
 def mock_bots():
     bale_bot = MagicMock()
@@ -11,6 +12,7 @@ def mock_bots():
     bale_bot.send_video = AsyncMock()
     eitaa_bot.send_file = AsyncMock()
     return bale_bot, eitaa_bot
+
 
 @pytest.fixture
 def mock_db():
@@ -21,12 +23,14 @@ def mock_db():
     db.mark_clip_sent = MagicMock()
     return db
 
+
 @pytest.fixture
 def service(mock_bots, mock_db):
     bale_bot, eitaa_bot = mock_bots
     s = ClipService(user_temp_data={}, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
     s.db = mock_db
     return s, bale_bot, eitaa_bot, mock_db
+
 
 @pytest.mark.asyncio
 @patch("services.clip_service.file_id_to_bynery", new_callable=AsyncMock)
@@ -39,9 +43,12 @@ async def test_auto_send(mock_file, service):
     result = await s.auto_send()
 
     mock_file.assert_awaited_once_with("file123", bale_bot)
-    bale_bot.send_video.assert_awaited_once_with(None, b"binary_content", "My Caption\n\n#کلیپ\n@tamakkon_ir")
+    bale_bot.send_video.assert_awaited_once_with(
+        None, b"binary_content", "My Caption\n\n#کلیپ\n@tamakkon_ir"
+    )
     db.mark_clip_sent.assert_called_once_with(1)
     assert "کلیپ با شناسه 1" in result["message"]
+
 
 @pytest.mark.asyncio
 async def test_handle_new_clip_with_video(service):
@@ -58,6 +65,7 @@ async def test_handle_new_clip_with_video(service):
     assert s.user_temp_data[123]["clip_file_id"] == "vid123"
     mock_msg.author.set_state.assert_called_once_with("INPUT_CLIP_CAPTION")
     bale_bot.send_message.assert_awaited_once_with(1, s.MESSAGES["send_caption"])
+
 
 @pytest.mark.asyncio
 async def test_handle_clip_caption(service):
@@ -76,6 +84,7 @@ async def test_handle_clip_caption(service):
     bale_bot.send_message.assert_awaited_once()
     assert user_id not in s.user_temp_data
     mock_msg.author.del_state.assert_called_once()
+
 
 @pytest.mark.asyncio
 async def test_handle_new_clip_without_video(service):

@@ -4,6 +4,7 @@ from services.book_service import BookService
 from models import books_model
 from utils.response import success_response
 
+
 @pytest.fixture
 def mock_bots():
     bale_bot = MagicMock()
@@ -11,6 +12,7 @@ def mock_bots():
     bale_bot.send_message = AsyncMock()
     eitaa_bot.send_message = AsyncMock()
     return bale_bot, eitaa_bot
+
 
 @pytest.fixture
 def mock_db():
@@ -28,12 +30,14 @@ def mock_db():
     db.mark_book_sent = MagicMock()
     return db
 
+
 @pytest.fixture
 def service(mock_bots, mock_db):
     bale_bot, eitaa_bot = mock_bots
     s = BookService(user_temp_data={}, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
     s.db = mock_db
     return s, bale_bot, eitaa_bot
+
 
 @pytest.mark.asyncio
 async def test_auto_send(service):
@@ -43,6 +47,7 @@ async def test_auto_send(service):
     eitaa_bot.send_message.assert_awaited_once()
     s.db.mark_book_sent.assert_called_once_with(1)
     assert "Test Book" in result["message"]
+
 
 @pytest.mark.asyncio
 async def test_input_book_flow(service):
@@ -80,6 +85,7 @@ async def test_input_book_flow(service):
         publisher=None,
         excerpt="Excerpt text",
     )
+
 
 @pytest.mark.asyncio
 async def test_input_book_id_for_edit_invalid(service):

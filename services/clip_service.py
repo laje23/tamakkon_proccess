@@ -4,7 +4,7 @@ from services.base_service import BaseService
 from utils.response import success_response, error_response
 from utils.decorator import safe_run
 from utils.media import file_id_to_bynery
-from utils.keyboard import back_menu
+from utils.keyboard import back_to_message_menu
 from models import clips_model
 import asyncio
 
@@ -80,7 +80,7 @@ class ClipService(BaseService):
 
         self.db.save_clip(file_id, caption)
         await self.bale_bot.send_message(
-            message.chat.id, self.MESSAGES["clip_caption_saved"], back_menu()
+            message.chat.id, self.MESSAGES["clip_caption_saved"], back_to_message_menu()
         )
 
         self.user_temp_data.pop(user_id, None)
@@ -94,7 +94,7 @@ class ClipService(BaseService):
 
         self.db.edit_clip_caption(id, new_caption)
         await self.bale_bot.send_message(
-            message.chat.id, self.MESSAGES["caption_edited"], back_menu()
+            message.chat.id, self.MESSAGES["caption_edited"], back_to_message_menu()
         )
 
         self.user_temp_data.pop(user_id, None)
