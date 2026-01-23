@@ -205,6 +205,13 @@ def edit_note_menu():
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
 
+def chose_winner_for_qaa_menu(collection_id):
+    return InlineKeyboard(
+        [InlineKeyboardButton('یک برنده را به طور تصادفی انتخاب کن' , f'chose_random_winner:{collection_id}')],
+        [InlineKeyboardButton("بازگشت", "back_to_message")]
+    )
+
+
 
 def back_to_message_menu():
     return InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_message")])

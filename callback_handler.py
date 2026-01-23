@@ -14,6 +14,7 @@ from models import (
 )
 from config.service_configs import *
 from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
+import random
 
 
 async def call_handler(callback_query):
@@ -298,4 +299,13 @@ async def call_handler(callback_query):
             win = "موفق" if is_winner == 1 else "ناموفق"
             text = text + f"{name} با شماره {user_id} در این مسابقه {win} بود\n"
 
+        await bale_bot.edit_message_text(ci, mi, text, chose_winner_for_qaa_menu(collection_id))
+        
+    elif t.startswith('chose_random_winner'):
+        collection_id = t.split(':')[-1].strip()
+        result = qaa_result_model.get_collection_winners(collection_id)
+        _, user_id, _, _ = random.choice(result)
+        _, _, name, _, _ = user_model.get_user(user_id)
+        text = f'آقا/خانم {name} با شماره آیدی {user_id}'
+        
         await bale_bot.edit_message_text(ci, mi, text, back_to_message_menu())
