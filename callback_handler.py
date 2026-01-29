@@ -107,7 +107,7 @@ async def call_handler(callback_query):
     elif t == "auto_send_note":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
         result = await note_services.auto_send()
-        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
+        await bale_bot.send_message(ci, result["message"] , back_to_message_menu())
 
     elif t == "auto_send_clip":
         result = await clip_services.auto_send()
