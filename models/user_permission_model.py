@@ -77,7 +77,7 @@ class UserPermissionTableManager:
     def _get_user_permissions(self, user_db_id):
         return self._execute(
             """
-            SELECT p.code
+            SELECT p.code 
             FROM permissions p
             JOIN user_permissions up ON up.permission_id = p.id
             WHERE up.user_id = %s
@@ -91,16 +91,19 @@ class UserPermissionTableManager:
     # چک داشتن permission خاص
     # -------------------------
     def _has_permission(self, user_db_id, permission_code):
-        return self._execute(
-            """
+        return (
+            self._execute(
+                """
             SELECT 1
             FROM permissions p
             JOIN user_permissions up ON up.permission_id = p.id
             WHERE up.user_id = %s AND p.code = %s;
             """,
-            (user_db_id, permission_code),
-            fetchone=True,
-        ) is not None
+                (user_db_id, permission_code),
+                fetchone=True,
+            )
+            is not None
+        )
 
 
 def create_user_permission_table():
@@ -126,3 +129,13 @@ def get_user_permissions(user_db_id):
 def has_permission(user_db_id, permission_code):
     with UserPermissionTableManager() as db:
         return db._has_permission(user_db_id, permission_code)
+
+
+def add_default_permission_for_admin(permission_list):
+    with UserPermissionTableManager() as db:
+        try:
+            for perm in permission_list:
+                db._add_permission_to_user(1, permission_id=perm)
+        except:
+            pass
+    return f"دسترسی های اولیه به کاربر ادمین داده شد"

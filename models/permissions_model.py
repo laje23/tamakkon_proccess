@@ -50,11 +50,18 @@ class PermissionTableManager:
     def _add_permission(self, code, description=None):
         return self._execute(
             """
-            INSERT INTO permissions (code, description)
-            VALUES (%s, %s)
-            RETURNING id;
+            WITH inserted AS (
+                INSERT INTO permissions (code, description)
+                VALUES (%s, %s)
+                ON CONFLICT (code) DO NOTHING
+                RETURNING id
+            )
+            SELECT id FROM inserted
+            UNION ALL
+            SELECT id FROM permissions WHERE code = %s
+            LIMIT 1;
             """,
-            (code, description),
+            (code, description, code),
             fetchone=True,
         )
 
@@ -121,3 +128,34 @@ def get_all_permissions():
 def delete_permission(code):
     with PermissionTableManager() as db:
         db._delete_permission(code)
+
+
+def insert_default_permissions():
+    default_permissions = [
+        ("view_bot_management_menu", "دیدن منوی مدیریت بات"),
+        ("member_access_management", "مدیریت دسترسی اعضا"),
+        ("send_to_channel", "ارسال پیام ها به کانال"),
+        ("competition_Management", "مدیریت مسابقات"),
+        ("save_and_edit_content", "نوشتن و ویرایش محتوای جدید"),
+        ("manage_default_sounds", "مدیریت صوت های پیشفرض"),
+        ("see_statistics", "دیدن آمار بات"),
+        ("toggle_scheduling_mode", "تغییر وضعیت زمانبندی"),
+    ]
+
+    with PermissionTableManager() as db:
+        for code, desc in default_permissions:
+            db._add_permission(code, desc)
+
+    return f"✅ {len(default_permissions)} permission اولیه اضافه شد"
+
+
+def get_all_permission_ids():
+    with PermissionTableManager() as db:
+        rows = db._execute(
+            """
+            SELECT id FROM permissions
+            ORDER BY id ASC;
+            """,
+            fetchall=True,
+        )
+    return [row[0] for row in rows]

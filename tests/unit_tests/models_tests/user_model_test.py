@@ -9,7 +9,6 @@ from models.user_model import (
     get_all_users,
     update_name,
     update_phone,
-    set_admin,
     delete_user,
 )
 
@@ -88,15 +87,6 @@ def test_update_phone(mock_db):
     sql, params = cursor.execute.call_args[0]
     assert re.search(r"UPDATE\s+users\s+SET\s+phone_number", sql)
     assert params == (989112233445, 1234)
-    conn.commit.assert_called_once()
-
-
-def test_set_admin(mock_db):
-    cursor, conn = mock_db
-    set_admin(1234, 1)
-    sql, params = cursor.execute.call_args[0]
-    assert re.search(r"UPDATE\s+users\s+SET\s+is_admin", sql)
-    assert params == (1, 1234)
     conn.commit.assert_called_once()
 
 

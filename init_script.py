@@ -5,10 +5,12 @@ from models import (
     hadith_model,
     lectures_model,
     notes_model,
+    permissions_model,
     qaa_collection_model,
     qaa_questions_model,
     qaa_result_model,
     user_model,
+    user_permission_model,
 )
 from config.channels import eitaa_channel_id_test
 import os
@@ -28,6 +30,16 @@ if __name__ == "__main__":
     qaa_collection_model.create_collections_table()
     qaa_questions_model.create_questions_table()
     qaa_result_model.create_results_table()
+    permissions_model.create_permission_table()
+    user_permission_model.create_user_permission_table()
+    print(permissions_model.insert_default_permissions())
+    print(user_model.add_admin(os.getenv("DEBUGER_ID")))
+    print(
+        user_permission_model.add_default_permission_for_admin(
+            permissions_model.get_all_permission_ids()
+        )
+    )
+
     asyncio.run(
         eitaa_bot.send_message(eitaa_channel_id_test, os.getenv("RESTART_MESSAGE"))
     )
