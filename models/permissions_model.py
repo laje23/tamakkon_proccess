@@ -65,7 +65,6 @@ class PermissionTableManager:
             fetchone=True,
         )
 
-
     # -------------------------
     # گرفتن permission با code
     # -------------------------
@@ -133,12 +132,14 @@ def delete_permission(code):
 
 def insert_default_permissions():
     default_permissions = [
-        ("message_manage", "مدیریت پیام‌ها و ارسال‌ها"),
-        ("auto_send", "ارسال خودکار پیام‌ها و محتوا"),
-        ("qaa_manage", "مدیریت مسابقات و پرسش‌ها"),
-        ("audio_manage", "مدیریت صوت‌ها و فایل‌های رسانه‌ای"),
-        ("note_manage", "مدیریت یادداشت‌ها و کتاب‌ها"),
-        ("promote_to_admin", "اجازه ارتقا دادن دیگران به مدیر"),
+        ("view_bot_management_menu", "دیدن منوی مدیریت بات"),
+        ("member_access_management", "مدیریت دسترسی اعضا"),
+        ("send_to_channel", "ارسال پیام ها به کانال"),
+        ("competition_Management", "مدیریت مسابقات"),
+        ("save_and_edit_content", "نوشتن و ویرایش محتوای جدید"),
+        ("manage_default_sounds", "مدیریت صوت های پیشفرض"),
+        ("see_statistics", "دیدن آمار بات"),
+        ("toggle_scheduling_mode", "تغییر وضعیت زمانبندی"),
     ]
 
     with PermissionTableManager() as db:
@@ -146,3 +147,15 @@ def insert_default_permissions():
             db._add_permission(code, desc)
 
     return f"✅ {len(default_permissions)} permission اولیه اضافه شد"
+
+
+def get_all_permission_ids():
+    with PermissionTableManager() as db:
+        rows = db._execute(
+            """
+            SELECT id FROM permissions
+            ORDER BY id ASC;
+            """,
+            fetchall=True,
+        )
+    return [row[0] for row in rows]

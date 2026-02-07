@@ -3,7 +3,7 @@ import asyncio
 import traceback
 from utils.response import error_response
 from utils.notifiter import send_to_admins
-from balethon.objects import InlineKeyboard , InlineKeyboardButton
+from balethon.objects import InlineKeyboard, InlineKeyboardButton
 from config.admins import debugger_id
 from config.bots import bale_bot
 
@@ -77,6 +77,7 @@ from models import user_model
 import inspect
 import functools
 
+
 def require_permission(permission_code: str):
     def decorator(func):
 
@@ -93,7 +94,6 @@ def require_permission(permission_code: str):
                 await bale_bot.send_message(
                     user_id,
                     "کاربر یافت نشد",
-                    
                 )
                 return
 
@@ -102,8 +102,8 @@ def require_permission(permission_code: str):
             if not has_permission(user_db_id, permission_code):
                 await bale_bot.send_message(
                     user_id,
-                    "⛔ شما دسترسی انجام این عملیات را ندارید" , 
-                    InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_main")])
+                    "⛔ شما دسترسی انجام این عملیات را ندارید",
+                    InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_main")]),
                 )
                 return
 
@@ -114,4 +114,5 @@ def require_permission(permission_code: str):
                 return func(*args, **kwargs)
 
         return wrapper
+
     return decorator

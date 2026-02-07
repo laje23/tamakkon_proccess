@@ -7,6 +7,7 @@ from models import audios_model, qaa_collection_model, qaa_questions_model, user
 from models import user_permission_model as up_model
 from utils.decorator import require_permission
 
+
 def main_menu(user_id):
     person = user_model.get_user(user_id)
 
@@ -19,13 +20,14 @@ def main_menu(user_id):
         rows = [[InlineKeyboardButton("مسابقات", "qaa_collection_to_user")]]
 
         # فقط افرادی که permission مدیریت پیام‌ها دارند
-        if up_model.has_permission(user_db_id, "message_manage"):
+        if up_model.has_permission(user_db_id, "view_bot_management_menu"):
             rows.append([InlineKeyboardButton("مدیریت پیام‌ها", "back_to_message")])
 
     return InlineKeyboard(*rows)
 
 
-def message_menu():
+@require_permission("view_bot_management_menu")
+def message_menu(user_id):
     return InlineKeyboard(
         [InlineKeyboardButton("ارسال ها", "send_menu")],
         [InlineKeyboardButton("مسابقات", "qaa_menu")],
@@ -51,7 +53,8 @@ def qaa_to_users_menu():
 
     return InlineKeyboard(*keyboards)
 
-@require_permission('qaa_manage')
+
+@require_permission("competition_Management")
 def qaa_menu(user_id):
     collections = qaa_collection_model.get_all_collections()
     keyboards = [
@@ -135,7 +138,8 @@ def index_action_question_menu(question_id):
     )
 
 
-def audios_menu():
+@require_permission("manage_default_sounds")
+def audios_menu(user_id):
     rows = audios_model.get_all_audios()
     keyboards = []
     if rows:
@@ -164,7 +168,8 @@ def note_menu():
     )
 
 
-def schaduler_menu(on: bool):
+@require_permission("toggle_scheduling_mode")
+def schaduler_menu(on: bool, user_id):
     rows = []
     if on:
         rows.append([InlineKeyboardButton("خاموش کردن زمانبندی", "schaduler_off")])
@@ -182,7 +187,8 @@ def book_menu():
     )
 
 
-def save_or_edit_menu():
+@require_permission("save_and_edit_content")
+def save_or_edit_menu(user_id):
     return InlineKeyboard(
         [InlineKeyboardButton("یادداشت", "note_menu")],
         [InlineKeyboardButton("کتاب", "book_menu")],
@@ -191,7 +197,8 @@ def save_or_edit_menu():
     )
 
 
-def send_menu():
+@require_permission("send_to_channel")
+def send_menu(user_id):
     return InlineKeyboard(
         [InlineKeyboardButton("حدیث", "auto_send_hadith")],
         [InlineKeyboardButton("یادداشت", "auto_send_note")],
@@ -237,8 +244,8 @@ def back_to_main_menu():
     return InlineKeyboard([InlineKeyboardButton("بازگشت", "back_to_main")])
 
 
-@require_permission('promote_to_admin')
-def users_menu(user_id , page=0 , callback_data=''):
+@require_permission("member_access_management")
+def users_menu(user_id, page=0, callback_data=""):
     users = user_model.get_all_users()
     total_users = len(users)
     start = page * 10
@@ -270,8 +277,7 @@ def users_menu(user_id , page=0 , callback_data=''):
     return InlineKeyboard(*keyboards)
 
 
-
-@require_permission('promote_to_admin')
+@require_permission("member_access_management")
 def user_permissions_menu(user_id, page=0):
     """
     منوی permissionهای یک کاربر
@@ -283,13 +289,17 @@ def user_permissions_menu(user_id, page=0):
     # گرفتن اطلاعات کاربر
     user_info = user_model.get_user(user_id)
     if not user_info:
-        return InlineKeyboard([InlineKeyboardButton("❌ کاربر یافت نشد", "back_to_main")])
-    
+        return InlineKeyboard(
+            [InlineKeyboardButton("❌ کاربر یافت نشد", "back_to_main")]
+        )
+
     db_id = user_info[0]
 
     # گرفتن همه permissionها
     all_permissions = permissions_model.get_all_permissions()  # [(id, code, desc), ...]
-    user_permissions = [p[0] for p in up_model.get_user_permissions(db_id)]  # ['auto_send', ...]
+    user_permissions = [
+        p[0] for p in up_model.get_user_permissions(db_id)
+    ]  # ['auto_send', ...]
 
     # صفحه بندی
     start = page * 10
@@ -305,9 +315,17 @@ def user_permissions_menu(user_id, page=0):
     # دکمه‌های صفحه قبل / بعد
     nav_buttons = []
     if page > 0:
-        nav_buttons.append(InlineKeyboardButton("⬅️ صفحه قبل", f"user_permissions_page:{user_id}:{page-1}"))
+        nav_buttons.append(
+            InlineKeyboardButton(
+                "⬅️ صفحه قبل", f"user_permissions_page:{user_id}:{page-1}"
+            )
+        )
     if end < len(all_permissions):
-        nav_buttons.append(InlineKeyboardButton("➡️ صفحه بعد", f"user_permissions_page:{user_id}:{page+1}"))
+        nav_buttons.append(
+            InlineKeyboardButton(
+                "➡️ صفحه بعد", f"user_permissions_page:{user_id}:{page+1}"
+            )
+        )
     if nav_buttons:
         rows.append(nav_buttons)
 
@@ -315,4 +333,3 @@ def user_permissions_menu(user_id, page=0):
     rows.append([InlineKeyboardButton("بازگشت", f"back_to_users_list")])
 
     return InlineKeyboard(*rows)
-

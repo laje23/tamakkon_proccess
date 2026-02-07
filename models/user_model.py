@@ -163,3 +163,13 @@ def update_phone(user_id, new_phone_number):
 def delete_user(user_id):
     with UserTableManager() as db:
         db._delete_user(user_id)
+
+
+def add_admin(user_id):
+
+    with UserTableManager() as db:
+        try:
+            db._add_user(user_id, "سید عباسعلی لاجوردی")
+        except:
+            pass
+    print("کاربر ادمین اضافه شد ")

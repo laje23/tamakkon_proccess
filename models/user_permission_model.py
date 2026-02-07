@@ -129,3 +129,13 @@ def get_user_permissions(user_db_id):
 def has_permission(user_db_id, permission_code):
     with UserPermissionTableManager() as db:
         return db._has_permission(user_db_id, permission_code)
+
+
+def add_default_permission_for_admin(permission_list):
+    with UserPermissionTableManager() as db:
+        try:
+            for perm in permission_list:
+                db._add_permission_to_user(1, permission_id=perm)
+        except:
+            pass
+    return f"دسترسی های اولیه به کاربر ادمین داده شد"
