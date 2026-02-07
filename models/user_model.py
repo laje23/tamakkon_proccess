@@ -40,8 +40,7 @@ class UserTableManager:
                 id SERIAL PRIMARY KEY,
                 user_id BIGINT NOT NULL UNIQUE,
                 name TEXT NOT NULL,
-                phone_number BIGINT,
-                is_admin SMALLINT DEFAULT 0
+                phone_number BIGINT
             );
             """
         )
@@ -49,14 +48,14 @@ class UserTableManager:
     # -------------------------
     # افزودن کاربر
     # -------------------------
-    def _add_user(self, user_id, name, phone_number=None, is_admin=0):
+    def _add_user(self, user_id, name, phone_number=None):
         return self._execute(
             """
-            INSERT INTO users (user_id, name, phone_number, is_admin)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO users (user_id, name, phone_number)
+            VALUES (%s, %s, %s)
             RETURNING id;
             """,
-            (user_id, name, phone_number, is_admin),
+            (user_id, name, phone_number),
             fetchone=True,
         )
 
@@ -66,7 +65,7 @@ class UserTableManager:
     def _get_user(self, user_id):
         return self._execute(
             """
-            SELECT id, user_id, name, phone_number, is_admin
+            SELECT id, user_id, name, phone_number
             FROM users
             WHERE user_id = %s;
             """,
@@ -80,7 +79,7 @@ class UserTableManager:
     def _get_all_users(self):
         return self._execute(
             """
-            SELECT id, user_id, name, phone_number, is_admin
+            SELECT id, user_id, name, phone_number
             FROM users
             ORDER BY id ASC;
             """,
@@ -114,19 +113,6 @@ class UserTableManager:
         )
 
     # -------------------------
-    # ست کردن مقدار is_admin (0 یا 1)
-    # -------------------------
-    def _set_admin(self, user_id, is_admin: int):
-        self._execute(
-            """
-            UPDATE users
-            SET is_admin = %s
-            WHERE user_id = %s;
-            """,
-            (is_admin, user_id),
-        )
-
-    # -------------------------
     # حذف کاربر
     # -------------------------
     def _delete_user(self, user_id):
@@ -149,9 +135,9 @@ def create_table():
         db._create_table()
 
 
-def add_user(user_id, name, phone_number=None, is_admin=0):
+def add_user(user_id, name, phone_number=None):
     with UserTableManager() as db:
-        return db._add_user(user_id, name, phone_number, is_admin)
+        return db._add_user(user_id, name, phone_number)
 
 
 def get_user(user_id):
@@ -174,11 +160,16 @@ def update_phone(user_id, new_phone_number):
         db._update_phone(user_id, new_phone_number)
 
 
-def set_admin(user_id, is_admin: int):
-    with UserTableManager() as db:
-        db._set_admin(user_id, is_admin)
-
-
 def delete_user(user_id):
     with UserTableManager() as db:
         db._delete_user(user_id)
+
+
+def add_admin(user_id):
+
+    with UserTableManager() as db:
+        try:
+            db._add_user(user_id, "سید عباسعلی لاجوردی")
+        except:
+            pass
+    print("کاربر ادمین اضافه شد ")

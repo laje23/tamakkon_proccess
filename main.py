@@ -145,7 +145,7 @@ async def _(message):
 
 @bale_bot.on_message(at_state("INPUT_AUDIO_FILE"))
 async def _(message):
-    await clip_services.save_new_audio(message)
+    await general_services.save_new_audio(message)
 
 
 # ⏳ مرحله اول – دریافت عنوان کالکشن

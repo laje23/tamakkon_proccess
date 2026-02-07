@@ -20,17 +20,40 @@ class BaseService:
         return success_response("پیام متنی ارسال شد")
 
     @safe_run
-    async def send_media(self, media_type, file_id, caption=None):
-        """ارسال عکس، ویدیو یا صوت"""
+    async def send_media(self, media_type, bin_file, caption=None):
+        """
+        ارسال رسانه به کانال‌های بله و ایتا
+        media_type: 'photo' | 'video' | 'audio'
+        bin_file: bytes یا BinaryIO
+        caption: متن همراه
+        """
+
+        platforms = {
+            "bale": {"func": None, "channel": self.bale_channel_id},
+            "eitaa": {"func": None, "channel": self.eitaa_channel_id},
+        }
+
+        # انتخاب تابع ارسال بر اساس نوع رسانه
         if media_type == "photo":
-            await self.bale_bot.send_photo(self.bale_channel_id, file_id, caption)
-            await self.eitaa_bot.send_file(self.eitaa_channel_id, file_id, caption)
+            bale_send = self.bale_bot.send_photo
+            eitaa_send = self.eitaa_bot.send_file
         elif media_type == "video":
-            await self.bale_bot.send_video(self.bale_channel_id, file_id, caption)
-            await self.eitaa_bot.send_file(self.eitaa_channel_id, file_id, caption)
+            bale_send = self.bale_bot.send_video
+            eitaa_send = self.eitaa_bot.send_file
         elif media_type == "audio":
-            await self.bale_bot.send_audio(self.bale_channel_id, file_id, caption)
-            await self.eitaa_bot.send_file(self.eitaa_channel_id, file_id, caption)
+            bale_send = self.bale_bot.send_audio
+            eitaa_send = self.eitaa_bot.send_file
         else:
             raise Exception("فرمت فایل نا معتبر")
-        return success_response(f"{media_type} ارسال شد")
+
+        # ارسال به بله
+        if hasattr(bin_file, "seek"):
+            bin_file.seek(0)
+        await bale_send(self.bale_channel_id, bin_file.read(), caption)
+
+        # ارسال به ایتا
+        if hasattr(bin_file, "seek"):
+            bin_file.seek(0)
+        await eitaa_send(self.eitaa_channel_id, bin_file, caption)
+
+        return success_response(f"{media_type} ارسال شد به همه پلتفرم‌ها")
