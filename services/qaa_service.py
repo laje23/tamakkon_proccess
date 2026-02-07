@@ -30,31 +30,37 @@ class QAAService:
                 author.id, "با موفقیت ذخیره شد", back_to_message_menu()
             )
             return
+
     @safe_run
     async def save_qaa_state_1(self, author, id):
         self.user_temp_data[author.id] = {"collection_id": id}
         await self.bot.send_message(author.id, "متن پرسش رو وارد کن")
         author.set_state("ENTER_QAA_TEXT")
+
     @safe_run
     async def save_qaa_state_2(self, author, text):
         self.user_temp_data[author.id]["question_text"] = text
         await self.bot.send_message(author.id, "حالا جواب غلط اول رو بفرست")
         author.set_state("ENTER_QAA_QUESTION_1")
+
     @safe_run
     async def save_qaa_state_3(self, author, text):
         self.user_temp_data[author.id]["option_1"] = text
         await self.bot.send_message(author.id, "حالا جواب غلط دوم رو بفرست")
         author.set_state("ENTER_QAA_QUESTION_2")
+
     @safe_run
     async def save_qaa_state_4(self, author, text):
         self.user_temp_data[author.id]["option_2"] = text
         await self.bot.send_message(author.id, "حالا جواب غلط سوم رو بفرست")
         author.set_state("ENTER_QAA_QUESTION_3")
+
     @safe_run
     async def save_qaa_state_5(self, author, text):
         self.user_temp_data[author.id]["option_3"] = text
         await self.bot.send_message(author.id, "حالا جواب درست رو بفرست")
         author.set_state("ENTER_QAA_CORRECT_OPTION")
+
     @safe_run
     async def save_qaa_state_6(self, author, text):
         collection_id = self.user_temp_data[author.id]["collection_id"]
@@ -82,6 +88,7 @@ class QAAService:
             author.id, "متن جدید را وارد کنید", back_to_message_menu()
         )
         author.set_state("EDIT_QAA_TITLE")
+
     @safe_run
     async def edit_qaa_title_2(self, author, text):
         collection_id = self.user_temp_data[author.id]["collection_id"]
@@ -91,6 +98,7 @@ class QAAService:
         )
         self.user_temp_data.pop(author.id, None)
         author.del_state()
+
     @safe_run
     async def edit_qaa_description_1(self, author, collection_id):
         self.user_temp_data[author.id] = {"collection_id": collection_id}
@@ -98,6 +106,7 @@ class QAAService:
             author.id, "متن جدید را وارد کنید", back_to_message_menu()
         )
         author.set_state("EDIT_QAA_DESCRIPTION")
+
     @safe_run
     async def edit_qaa_description_2(self, author, text):
         collection_id = self.user_temp_data[author.id]["collection_id"]
@@ -140,6 +149,7 @@ class QAAService:
         await self.bot.edit_message_text(
             author.id, message_id, str(question_text), InlineKeyboard(*buttons)
         )
+
     @safe_run
     async def handel_qaa_answers(self, author, message_id, answer):
         index = self.user_temp_data[author.id]["question_index"]
@@ -191,6 +201,7 @@ class QAAService:
                 "سوالات به پایان رسید ممنون از شرکت شما\nنتیجه به شما اطلاع رسانی میشود",
                 back_to_main_menu(),
             )
+
     @safe_run
     async def start_edit_field(self, author, question_id, field):
         self.user_temp_data[author.id] = {"question_id": question_id, "field": field}
@@ -200,6 +211,7 @@ class QAAService:
         )
 
         author.set_state("EDIT_QAA_FIELD")
+
     @safe_run
     async def commit_edit_field(self, author, new_value):
         temp = self.user_temp_data.get(author.id)

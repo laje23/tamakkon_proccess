@@ -51,11 +51,9 @@ class BaseService:
             bin_file.seek(0)
         await bale_send(self.bale_channel_id, bin_file.read(), caption)
 
-
         # ارسال به ایتا
         if hasattr(bin_file, "seek"):
             bin_file.seek(0)
         await eitaa_send(self.eitaa_channel_id, bin_file, caption)
 
         return success_response(f"{media_type} ارسال شد به همه پلتفرم‌ها")
-

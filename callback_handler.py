@@ -107,7 +107,7 @@ async def call_handler(callback_query):
     elif t == "auto_send_note":
         await bale_bot.edit_message_text(ci, mi, "در حال ارسال...")
         result = await note_services.auto_send()
-        await bale_bot.send_message(ci, result["message"] , back_to_message_menu())
+        await bale_bot.send_message(ci, result["message"], back_to_message_menu())
 
     elif t == "auto_send_clip":
         result = await clip_services.auto_send()
@@ -204,7 +204,7 @@ async def call_handler(callback_query):
         callback_query.author.set_state("ENTER_QAA_TITLE")
 
     elif t == "qaa_menu":
-        await bale_bot.edit_message_text(ci, mi, "منوی مسابقات", qaa_menu())
+        await bale_bot.edit_message_text(ci, mi, "منوی مسابقات", await qaa_menu(user_id=ui))
 
     elif t.startswith("index_qaa_collection:"):
         id = t.split(":")[1].strip()
@@ -295,17 +295,58 @@ async def call_handler(callback_query):
         result = qaa_result_model.get_collection_results(collection_id)
         text = "اسامی شرکت کنندگان \n\n"
         for id, user_id, collection_id, is_winner in result:
-            _, user_id, name, _, _ = user_model.get_user(user_id)
+            (
+                _,
+                user_id,
+                name,
+                _,
+            ) = user_model.get_user(user_id)
             win = "موفق" if is_winner == 1 else "ناموفق"
             text = text + f"{name} با شماره {user_id} در این مسابقه {win} بود\n"
 
-        await bale_bot.edit_message_text(ci, mi, text, chose_winner_for_qaa_menu(collection_id))
-        
-    elif t.startswith('chose_random_winner'):
-        collection_id = t.split(':')[-1].strip()
+        await bale_bot.edit_message_text(
+            ci, mi, text, chose_winner_for_qaa_menu(collection_id)
+        )
+
+    elif t.startswith("chose_random_winner"):
+        collection_id = t.split(":")[-1].strip()
         result = qaa_result_model.get_collection_winners(collection_id)
         _, user_id, _, _ = random.choice(result)
-        _, _, name, _, _ = user_model.get_user(user_id)
-        text = f'آقا/خانم {name} با شماره آیدی {user_id}'
-        
+        (
+            _,
+            _,
+            name,
+            _,
+        ) = user_model.get_user(user_id)
+        text = f"آقا/خانم {name} با شماره آیدی {user_id}"
+
         await bale_bot.edit_message_text(ci, mi, text, back_to_message_menu())
+
+    
+    elif t == 'back_to_users_list':
+        await bale_bot.edit_message_text(ui,mi,'کاربران' ,await users_menu(user_id = ui ,page=0 , callback_data='user_permission_chose' )) 
+
+    elif t.startswith('user_permission_chose'):
+        user_id = t.split(":")[-1].strip()
+        await bale_bot.edit_message_text(ui,mi,'دسترسی ها',await user_permissions_menu(user_id=user_id , page= 0))
+        
+    elif t.startswith('users_page'):
+        page = t.split(":")[-1].strip()
+        
+        await bale_bot.edit_message_text(ui,mi,'کاربران', await users_menu(user_id = ui ,page=page , callback_data='user_permission_chose'))
+
+
+    elif t.startswith('user_permissions_page'):
+        user_id ,page= t.split(":")
+        await bale_bot.edit_message_text(ui ,mi , 'دسترسی ها' , await user_permissions_menu(page=page , user_id=user_id))
+
+
+    elif t.startswith('toggle_permission') :
+        _ ,user_id ,user_db_id , permission_code = t.split(':')
+        if up_model.has_permission(user_db_id, permission_code):
+            up_model.remove_permission_from_user(user_db_id, permissions_model.get_permission(permission_code)[0])
+        else:
+            up_model.add_permission_to_user(user_db_id, permissions_model.get_permission(permission_code)[0])
+    
+        menu = await user_permissions_menu(user_id=user_id)
+        await bale_bot.edit_message_text(chat_id=ui, message_id=mi,text ='دسترسی ها' ,reply_markup=menu)

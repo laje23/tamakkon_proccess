@@ -1,9 +1,12 @@
 from utils.keyboard import *
+from utils.decorator import require_permission , safe_run
 
 
 class UserService:
-    def __init__(self, user_model, bale_bot):
+    def __init__(self, user_model, bale_bot , permission_model , user_permission_model):
         self.model = user_model
+        self.permission_model = permission_model
+        self.user_permission_model = user_permission_model
         self.bot = bale_bot
 
     async def handel_login_button(self, author, message_id):
