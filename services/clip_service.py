@@ -5,7 +5,7 @@ from utils.response import success_response, error_response
 from utils.decorator import safe_run
 from utils.media import file_id_to_bynery
 from utils.keyboard import back_to_message_menu
-from models import clips_model
+from models import media_model
 import asyncio
 
 
@@ -14,7 +14,7 @@ class ClipService(BaseService):
         """
         سرویس مدیریت ارسال کلیپ‌ها
         """
-        super().__init__(db_model=clips_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        super().__init__(db_model=media_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
         self.user_temp_data = user_temp_data
         self.MESSAGES = {
             "invalid_number": "❗️ لطفاً فقط عدد مثبت وارد کنید.",

@@ -1,5 +1,5 @@
 from balethon.conditions import command, group, at_state, private, all
-from models import hadith_model, lectures_model
+from models import hadith_model , media_model
 from config.bots import bale_bot
 from config.admins import admins
 from utils.notifiter import send_to_admins
@@ -203,7 +203,6 @@ async def handle_qaa_field_edit(message):
 async def handel_login(message):
     await user_service.insert_user(message.author, message.text)
 
-
 # 📥 دریافت پیام‌های گروهی
 @bale_bot.on_message(group)
 async def collect_group_input(message):
@@ -213,7 +212,7 @@ async def collect_group_input(message):
 
         elif message.chat.id == group_reserch_lecture_id:
             if message.document:
-                lectures_model.save_lecture(message.document.id, message.caption)
+                media_model.save_lecture(message.document.id, message.caption)
             else:
                 await send_to_admins(
                     error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")

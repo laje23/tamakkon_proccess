@@ -4,7 +4,7 @@ from utils.response import success_response
 from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
-from models import audios_model
+from models import media_model
 from utils.keyboard import back_to_message_menu
 import asyncio
 
@@ -15,11 +15,11 @@ class GeneralService:
         user_temp_data,
         bale_bot=bale_bot,
         eitaa_bot=eitaa_bot,
-        audio_model=audios_model,
+        media_model=media_model,
     ):
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
-        self.audio_model = audio_model
+        self.media_model = media_model
         self.user_temp_data = user_temp_data
         self.bale_channel_id = bale_channel_id
         self.eitaa_channel_id = eitaa_channel_id
@@ -99,15 +99,17 @@ class GeneralService:
             await self.send_text_message(text)
             return success_response("پیام ارسال شد")
 
-    @safe_run
+    # @safe_run
     async def save_new_audio(self, message):
         user_id = message.author.id
         id = self.user_temp_data[user_id]["audio_id"]
         if id:
+            print('....')
             if message.document:
+                print('.....................................')
                 file_id = message.document.id
                 caption = message.caption or ""
-                self.audio_model.update_row_by_id(id, file_id, caption)
+                self.media_model.update_audio(id, file_id, caption)
                 await self.bale_bot.send_message(
                     message.chat.id, "با موفقیت تغییر کرد ", back_to_message_menu()
                 )

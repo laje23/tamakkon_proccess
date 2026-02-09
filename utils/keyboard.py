@@ -1,9 +1,9 @@
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import user_model
+from models import user_model , media_model
 from models import user_permission_model as up_model
 from models import permissions_model
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import audios_model, qaa_collection_model, qaa_questions_model, user_model
+from models import qaa_collection_model, qaa_questions_model, user_model
 from models import user_permission_model as up_model
 from utils.decorator import require_permission
 
@@ -140,11 +140,11 @@ def index_action_question_menu(question_id):
 
 @require_permission("manage_default_sounds")
 def audios_menu(user_id):
-    rows = audios_model.get_all_audios()
+    rows = media_model.get_all_audios()
     keyboards = []
     if rows:
         for row in rows:
-            id, file_name, file_id, caption = row
+            id, file_name, file_id, caption, sent = row
             button = InlineKeyboardButton(str(file_name), f"audio:{id}")
             keyboards.append([button])
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])

@@ -45,11 +45,12 @@ class BaseService:
             eitaa_send = self.eitaa_bot.send_file
         else:
             raise Exception("فرمت فایل نا معتبر")
+        
 
         # ارسال به بله
         if hasattr(bin_file, "seek"):
             bin_file.seek(0)
-        await bale_send(self.bale_channel_id, bin_file.read(), caption)
+        await bale_send(self.bale_channel_id, bin_file.read(), caption=caption)
 
         # ارسال به ایتا
         if hasattr(bin_file, "seek"):

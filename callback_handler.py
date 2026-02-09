@@ -3,12 +3,10 @@ from config.admins import admins
 from config.setting import user_temp_data
 from config.bots import bale_bot
 from models import (
-    audios_model,
     books_model,
     hadith_model,
-    lectures_model,
+    media_model,
     notes_model,
-    clips_model,
     qaa_collection_model,
     qaa_result_model,
     user_model,
@@ -72,44 +70,6 @@ async def call_handler(callback_query):
     # 📚 منوی کتاب‌ها
     elif t == "book_menu":
         await bale_bot.edit_message_text(ci, mi, "منوی معرفی کتاب", book_menu())
-
-    # 📊 دریافت آمار
-    elif t == "get_status":
-        id, user_id, name, phone_number = user_model.get_user(ui)
-        if not has_permission(id, "see_statistics"):
-            bale_bot.edit_message_text(
-                ui, mi, "شما دسترسی این کار رو ندارید", back_to_message_menu()
-            )
-            return
-        book = books_model.get_status()
-        clip = clips_model.get_status()
-        hadith = hadith_model.get_status()
-        note = notes_model.get_status()
-        lecture = lectures_model.get_status()
-
-        text = f"""آمار کلی سیستم:
-.............................
-کتاب‌ها
-    ارسال شده: {book['sent']}
-    ارسال نشده: {book['unsent']}
-
-کلیپ‌ها
-    ارسال شده: {clip['sent']}
-    ارسال نشده: {clip['unsent']}
-
-احادیث
-    ارسال شده: {hadith['sent']}
-    ارسال نشده: {hadith['unsent']}
-
-یادداشت‌ها
-    ارسال شده: {note['sent']}
-    ارسال نشده: {note['unsent']}
-
-سخنرانی ها 
-    ارسال شده: {lecture['sent']}
-    ارسال نشده: {lecture['unsent']}
-"""
-        await bale_bot.edit_message_text(ci, mi, text, back_to_message_menu())
 
     # 🔄 ارسال خودکار
     elif t == "auto_send_hadith":
@@ -210,7 +170,7 @@ async def call_handler(callback_query):
     elif t == "create_default_audios_row":
         audio_name_list = ["دعای فرج", "دعای احد", "توحید"]
         for i in audio_name_list:
-            audios_model.insert_audio(str(i), 0000000, "")
+            media_model.insert_audio(str(i), 0000000, "")
         await bale_bot.edit_message_text(
             ci, mi, "مقادیر پیشفرض ایجاد شدند", back_to_message_menu()
         )
