@@ -2,9 +2,8 @@
 
 from services.base_service import BaseService
 from utils.response import success_response
-from utils.decorator import safe_run
 from utils.media import file_id_to_bynery
-from models import lectures_model
+from models import media_model
 
 
 class LectureService(BaseService):
@@ -12,11 +11,8 @@ class LectureService(BaseService):
         """
         سرویس مدیریت ارسال سخنرانی‌ها
         """
-        super().__init__(
-            db_model=lectures_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot
-        )
+        super().__init__(db_model=media_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
 
-    @safe_run
     async def auto_send(self):
         """
         ارسال خودکار یک سخنرانی به کانال‌های بله و ایتا

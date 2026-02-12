@@ -1,5 +1,4 @@
 from services.base_service import BaseService
-from utils.decorator import safe_run
 from utils.response import success_response
 from utils.message_prosseccing import process_note_message
 from models import (
@@ -34,7 +33,6 @@ class NoteService(BaseService):
             "invalid_media_response": "لطفاً فایل بفرست یا بنویس 'ندارم'.",
         }
 
-    @safe_run
     async def auto_send(self):
         """
         ارسال خودکار یک یادداشت به کانال‌ها
@@ -85,7 +83,6 @@ class NoteService(BaseService):
         self.db.mark_sent(text_id)
         return success_response("یادداشت ارسال شد")
 
-    @safe_run
     async def first_step_save(self, message):
         note_number = fa_to_en_int(message.text)
         if note_number <= 0:
@@ -113,7 +110,6 @@ class NoteService(BaseService):
         message.author.set_state("ASK_MEDIA")
         await self.bale_bot.send_message(message.chat.id, self.MESSAGES["ask_media"])
 
-    @safe_run
     async def handle_media_step(self, message):
         user_id = message.author.id
         state = message.author.get_state()
@@ -146,7 +142,6 @@ class NoteService(BaseService):
                 message.chat.id, self.MESSAGES["invalid_media_response"]
             )
 
-    @safe_run
     async def handle_text_parts(self, message):
         user_id = message.author.id
         state = message.author.get_state()
@@ -172,7 +167,6 @@ class NoteService(BaseService):
         )
         message.author.set_state("CONFIRM_MORE_TEXT")
 
-    @safe_run
     async def confirm_more_text(self, message):
         user_id = message.author.id
         answer = message.text.strip().lower()

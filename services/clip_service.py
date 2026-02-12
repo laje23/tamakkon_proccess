@@ -2,10 +2,9 @@
 
 from services.base_service import BaseService
 from utils.response import success_response, error_response
-from utils.decorator import safe_run
 from utils.media import file_id_to_bynery
 from utils.keyboard import back_to_message_menu
-from models import clips_model
+from models import media_model
 import asyncio
 
 
@@ -14,7 +13,7 @@ class ClipService(BaseService):
         """
         سرویس مدیریت ارسال کلیپ‌ها
         """
-        super().__init__(db_model=clips_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        super().__init__(db_model=media_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
         self.user_temp_data = user_temp_data
         self.MESSAGES = {
             "invalid_number": "❗️ لطفاً فقط عدد مثبت وارد کنید.",
@@ -30,7 +29,6 @@ class ClipService(BaseService):
             "error_editing_caption": "❌ خطا در ویرایش کپشن:",
         }
 
-    @safe_run
     async def auto_send(self):
         """
         ارسال خودکار یک کلیپ به کانال‌های بله و ایتا
@@ -55,7 +53,6 @@ class ClipService(BaseService):
 
         return success_response(f"کلیپ با شناسه {id} ارسال شد")
 
-    @safe_run
     async def handle_new_clip(self, message):
         user_id = message.author.id
         self.user_temp_data[user_id] = {}
@@ -72,7 +69,6 @@ class ClipService(BaseService):
         message.author.set_state("INPUT_CLIP_CAPTION")
         await self.bale_bot.send_message(message.chat.id, self.MESSAGES["send_caption"])
 
-    @safe_run
     async def handle_clip_caption(self, message):
         user_id = message.author.id
         file_id = self.user_temp_data[user_id].get("clip_file_id")
@@ -86,7 +82,6 @@ class ClipService(BaseService):
         self.user_temp_data.pop(user_id, None)
         message.author.del_state()
 
-    @safe_run
     async def handle_edit_caption(self, message):
         user_id = message.author.id
         id = self.user_temp_data[user_id].get("edit_id")

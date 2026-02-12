@@ -1,10 +1,9 @@
-from utils.decorator import safe_run
 from utils.datetime import get_mentioning_day
 from utils.response import success_response
 from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
-from models import audios_model
+from models import media_model
 from utils.keyboard import back_to_message_menu
 import asyncio
 
@@ -15,16 +14,15 @@ class GeneralService:
         user_temp_data,
         bale_bot=bale_bot,
         eitaa_bot=eitaa_bot,
-        audio_model=audios_model,
+        media_model=media_model,
     ):
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
-        self.audio_model = audio_model
+        self.media_model = media_model
         self.user_temp_data = user_temp_data
         self.bale_channel_id = bale_channel_id
         self.eitaa_channel_id = eitaa_channel_id
 
-    @safe_run
     async def send_audio_file(self, file_id, caption=None):
         bin_file = await file_id_to_bynery(file_id, self.bale_bot)
         bin_data = await bin_file.read()  # اصلاح: await کردن read()
@@ -34,7 +32,6 @@ class GeneralService:
         )
         return success_response("فایل صوتی ارسال شد")
 
-    @safe_run
     async def send_photo_with_text(self, photo_path, text):
         await asyncio.gather(
             self.bale_bot.send_photo(self.bale_channel_id, photo_path, text),
@@ -42,7 +39,6 @@ class GeneralService:
         )
         return success_response("پیام تصویری ارسال شد")
 
-    @safe_run
     async def send_text_message(self, text):
         await asyncio.gather(
             self.bale_bot.send_message(self.bale_channel_id, text),
@@ -50,7 +46,6 @@ class GeneralService:
         )
         return success_response("پیام متنی ارسال شد")
 
-    @safe_run
     async def send_prayer(self, prayer_type: str):
         dict_pr = {"faraj": 1, "ahd": 2, "tohid": 3}
         id_key = dict_pr[prayer_type]
@@ -62,7 +57,6 @@ class GeneralService:
         await self.send_audio_file(file_id, caption)
         return success_response("دعا ارسال شد")
 
-    @safe_run
     async def send_day_info(self):
         day = get_mentioning_day()
         text = (
@@ -74,7 +68,6 @@ class GeneralService:
         await self.send_photo_with_text(day["path"], text)
         return success_response("اطلاعات روز ارسال شد ")
 
-    @safe_run
     async def send_message_to_channel(self, message, bot):
         if x := await get_media_bytes(message, bot):
             bin_file, typefile = x
@@ -99,7 +92,7 @@ class GeneralService:
             await self.send_text_message(text)
             return success_response("پیام ارسال شد")
 
-    @safe_run
+    #
     async def save_new_audio(self, message):
         user_id = message.author.id
         id = self.user_temp_data[user_id]["audio_id"]
@@ -107,7 +100,7 @@ class GeneralService:
             if message.document:
                 file_id = message.document.id
                 caption = message.caption or ""
-                self.audio_model.update_row_by_id(id, file_id, caption)
+                self.media_model.update_audio(id, file_id, caption)
                 await self.bale_bot.send_message(
                     message.chat.id, "با موفقیت تغییر کرد ", back_to_message_menu()
                 )

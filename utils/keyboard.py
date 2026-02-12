@@ -1,11 +1,14 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import user_model
+from models import user_model, media_model
 from models import user_permission_model as up_model
-from models import permissions_model
+from models import permissions_model, schedule_message_model
 from balethon.objects import InlineKeyboard, InlineKeyboardButton
-from models import audios_model, qaa_collection_model, qaa_questions_model, user_model
+from models import qaa_collection_model, qaa_questions_model, user_model
 from models import user_permission_model as up_model
 from utils.decorator import require_permission
+from utils.datetime import get_days_until_friday_fa
 
 
 def main_menu(user_id):
@@ -30,6 +33,7 @@ def main_menu(user_id):
 def message_menu(user_id):
     return InlineKeyboard(
         [InlineKeyboardButton("ارسال ها", "send_menu")],
+        [InlineKeyboardButton("ارسال زمانبندی شده", "schedule_message_menu")],
         [InlineKeyboardButton("مسابقات", "qaa_menu")],
         [InlineKeyboardButton("ذخیره و ویرایش", "add_and_edit")],
         [InlineKeyboardButton("صوت های ارسالی", "change_audio_file_id")],
@@ -140,11 +144,11 @@ def index_action_question_menu(question_id):
 
 @require_permission("manage_default_sounds")
 def audios_menu(user_id):
-    rows = audios_model.get_all_audios()
+    rows = media_model.get_all_audios()
     keyboards = []
     if rows:
         for row in rows:
-            id, file_name, file_id, caption = row
+            id, file_name, file_id, caption, sent = row
             button = InlineKeyboardButton(str(file_name), f"audio:{id}")
             keyboards.append([button])
         keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
@@ -208,6 +212,26 @@ def send_menu(user_id):
         [InlineKeyboardButton("ارسال پیام به کانال", "send_to_channel")],
         [InlineKeyboardButton("بازگشت", "back_to_message")],
     )
+
+
+@require_permission("send_to_channel")
+def schedule_message_menu(user_id):
+    messages = schedule_message_model.get_all_messages()
+    keyboards = [
+        [InlineKeyboardButton("پیام جدید", "schedule_message")],
+    ]
+    if messages:
+        for message in messages:
+            button = InlineKeyboardButton(
+                str(message[0]),
+                f"schedule_message_view:{message[0]}",
+            )
+            keyboards.append([button])
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+    else:
+        keyboards.append([InlineKeyboardButton("بازگشت", "back_to_message")])
+
+    return InlineKeyboard(*keyboards)
 
 
 def answer_y_n(id):
@@ -333,3 +357,90 @@ def user_permissions_menu(user_id, page=0):
     rows.append([InlineKeyboardButton("بازگشت", f"back_to_users_list")])
 
     return InlineKeyboard(*rows)
+
+
+def week_days_menu():
+    days_list = get_days_until_friday_fa()
+    keyboard = []
+    for day_info in days_list:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    f"{day_info.get('day')}__{day_info.get('date_jalali')}",
+                    f"select_day_of_week_for_schedule_message:{day_info.get('date_gregorian')}",
+                )
+            ]
+        )
+
+    keyboard.append([InlineKeyboardButton("بازگشت", f"back_to_message_menu")])
+
+    return InlineKeyboard(*keyboard)
+
+
+def day_hours_menu(day_date, tz="Asia/Tehran"):
+    now = datetime.now(ZoneInfo(tz))
+    today_str = now.date().isoformat()
+
+    if day_date == today_str:
+        start_hour = now.hour + 1
+    else:
+        start_hour = 0
+
+    hours = [f"{h:02d}" for h in range(start_hour, 24)]
+
+    keyboard = []
+    row = []
+
+    for i, hour in enumerate(hours, start=1):
+        row.append(
+            InlineKeyboardButton(
+                hour, f"select_hour_for_schedule_message:{day_date}:{hour}"
+            )
+        )
+
+        if i % 4 == 0:
+            keyboard.append(row)
+            row = []
+
+    if row:
+        keyboard.append(row)
+
+    keyboard.append([InlineKeyboardButton("بازگشت", "back_to_week_days_menu")])
+
+    return InlineKeyboard(*keyboard)
+
+
+def hour_minutes_menu(day_date, hour):
+    minutes = [f"{h:02d}" for h in range(0, 60, 5)]
+
+    keyboard = []
+
+    row = []
+    for i, minute in enumerate(minutes, start=1):
+        row.append(
+            InlineKeyboardButton(
+                minute, f"select_minute_for_schedule_message:{day_date}:{hour}:{minute}"
+            )
+        )
+
+        if i % 4 == 0:
+            keyboard.append(row)
+            row = []
+
+    if row:
+        keyboard.append(row)
+
+    keyboard.append([InlineKeyboardButton("بازگشت", "back_to_week_days_menu")])
+
+    return InlineKeyboard(*keyboard)
+
+
+def schedule_message_view_menu(message_db_id , sent_message_id):
+    return InlineKeyboard(
+        [
+            InlineKeyboardButton(
+                "حذف این پیام از زمان بندی", f"delete_scheduled_message:{message_db_id}"
+            )
+        ],
+        [InlineKeyboardButton("بازگشت", f"back_to_message_from_schedule:{sent_message_id}")],
+    )
