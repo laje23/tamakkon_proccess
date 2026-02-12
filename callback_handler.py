@@ -12,7 +12,7 @@ from models import (
     user_model,
 )
 from config.service_configs import *
-from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
+from utils.scheduler_utils import get_scheduler_state, set_scheduler_state
 import random
 from models.user_permission_model import has_permission
 
@@ -128,18 +128,18 @@ async def call_handler(callback_query):
             ci,
             mi,
             "وضعیت زمانبندی",
-            await schaduler_menu(on=get_schaduler_state(), user_id=ui),
+            await schaduler_menu(on=get_scheduler_state(), user_id=ui),
         )
 
     elif t.startswith("schaduler"):
         if t == "schaduler_on":
-            set_schaduler_state(True)
+            set_scheduler_state(True)
             await bale_bot.edit_message_text(
                 ci, mi, "زمانبندی فعال شد", back_to_message_menu()
             )
 
         elif t == "schaduler_off":
-            set_schaduler_state(False)
+            set_scheduler_state(False)
             await bale_bot.edit_message_text(
                 ci, mi, "زمانبندی غیرفعال شد", back_to_message_menu()
             )
@@ -348,4 +348,53 @@ async def call_handler(callback_query):
         menu = await user_permissions_menu(user_id=user_id)
         await bale_bot.edit_message_text(
             chat_id=ui, message_id=mi, text="دسترسی ها", reply_markup=menu
+        )
+
+    elif t == "schedule_message":
+        await schedul_message_service.start_message_flow(callback_query.author)
+
+    elif t.startswith("delete_scheduled_message"):
+        sm_id = t.split(":")[-1].strip()
+        schedule_message_model.delete_message(sm_id)
+        await bale_bot.edit_message_text(
+            ci, mi, "پیام از زمانبندی حذف شد ", back_to_message_menu()
+        )
+
+    elif t == "schedule_message_menu":
+        await bale_bot.edit_message_text(
+            ci,
+            mi,
+            "یکی را نتخاب کنید",
+            await schedule_message_menu(user_id=ui),
+        )
+
+    elif t.startswith("select_day_of_week_for_schedule_message"):
+        day_date = t.split(":")[-1].strip()
+        await schedul_message_service.handel_hour_send_time(ui, mi, day_date=day_date)
+
+    elif t.startswith("select_hour_for_schedule_message"):
+        _, day_date, hour = t.split(":")
+        await schedul_message_service.handel_minute_send_time(
+            ui, mi, day_date=day_date, hour=hour
+        )
+
+    elif t.startswith("select_minute_for_schedule_message"):
+        _, day_date, hour, minute = t.split(":")
+
+        await schedul_message_service.save_scheduled_message(
+            user_id=ui, message_id=mi, day_date=day_date, hour=hour, minute=minute
+        )
+
+    elif t.startswith("schedule_message_view"):
+        message_db_id = t.split(":")[-1].strip()
+
+        await schedul_message_service.send_schedule_message_by_id(message_db_id, ci, mi)
+
+    elif t.startswith('back_to_message_from_schedule'):
+        _ , message_id , chat_id = t.split(":")
+        
+        await bale_bot.delete_message(chat_id=chat_id , message_id=message_id)
+        
+        await bale_bot.edit_message_text(
+            ci, mi, "منوی مدیریت پیام", await message_menu(user_id=ui)
         )

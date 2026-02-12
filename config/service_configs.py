@@ -8,6 +8,7 @@ from services.general_service import GeneralService
 from services.lecture_service import LectureService
 from services.qaa_service import QAAService
 from services.user_service import UserService
+from services.schedule_message_service import ScheduledMessageService as sms
 from models import (
     permissions_model,
     qaa_collection_model,
@@ -26,6 +27,7 @@ general_services = GeneralService(user_temp_data, bale_bot, eitaa_bot)
 qaa_service = QAAService(
     bale_bot, qaa_collection_model, qaa_questions_model, qaa_result_model
 )
+schedul_message_service = sms(user_temp_data, bale_bot, eitaa_bot)
 user_service = UserService(
     user_model=user_model,
     bale_bot=bale_bot,
@@ -42,4 +44,5 @@ __all__ = [
     "general_services",
     "qaa_service",
     "user_service",
+    "schedul_message_service",
 ]

@@ -1,5 +1,4 @@
 # services/base_service.py
-from utils.decorator import safe_run
 from utils.response import success_response
 from config.channels import bale_channel_id, eitaa_channel_id
 
@@ -12,14 +11,12 @@ class BaseService:
         self.bale_channel_id = bale_channel_id
         self.eitaa_channel_id = eitaa_channel_id
 
-    @safe_run
     async def send_text(self, text_bale, text_eitaa):
         """ارسال پیام متنی به هر دو پلتفرم"""
         await self.bale_bot.send_message(self.bale_channel_id, text_bale)
         await self.eitaa_bot.send_message(self.eitaa_channel_id, text_eitaa)
         return success_response("پیام متنی ارسال شد")
 
-    @safe_run
     async def send_media(self, media_type, bin_file, caption=None):
         """
         ارسال رسانه به کانال‌های بله و ایتا
@@ -45,7 +42,6 @@ class BaseService:
             eitaa_send = self.eitaa_bot.send_file
         else:
             raise Exception("فرمت فایل نا معتبر")
-        
 
         # ارسال به بله
         if hasattr(bin_file, "seek"):

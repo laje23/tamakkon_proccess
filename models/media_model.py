@@ -31,6 +31,10 @@ class MediaTableManager:
             """
         )
 
+    def get_media_by_id(self, id):
+        self.cursor.execute("SELECT * FROM media WHERE id = %s", (id,))
+        return self.cursor.fetchone()
+
     # ---------- Generic CRUD ----------
 
     def insert(self, filename, file_id, caption, media_type, sent=0):
@@ -38,9 +42,13 @@ class MediaTableManager:
             """
             INSERT INTO media (filename, file_id, caption, type, sent)
             VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
             """,
             (filename, file_id, caption, media_type, sent),
         )
+        media_id = self.cursor.fetchone()[0]  # id جدید
+        self.conn.commit()  # فراموش نشه commit
+        return media_id
 
     def update(self, id, file_id=None, caption=None):
         if file_id is not None:
@@ -124,11 +132,14 @@ class MediaTableManager:
 
         return {"sent": sent, "unsent": unsent}
 
+
 def create_table():
-    with MediaTableManager() as db :
+    with MediaTableManager() as db:
         db.create_table()
 
+
 # ---------- AUDIO ----------
+
 
 def insert_audio(filename, file_id, caption=None):
     with MediaTableManager() as db:
@@ -156,6 +167,7 @@ def delete_audio(id):
 
 
 # ---------- CLIP ----------
+
 
 def save_clip(file_id, caption):
     with MediaTableManager() as db:
@@ -188,6 +200,7 @@ def get_last_clip_id():
 
 
 # ---------- LECTURE ----------
+
 
 def save_lecture(file_id, caption):
     with MediaTableManager() as db:

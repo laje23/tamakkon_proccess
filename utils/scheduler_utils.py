@@ -1,17 +1,17 @@
 import json
 
-STATE_FILE = "schaduler_state.json"
+STATE_FILE = "scheduler_state.json"
 
 
-def get_schaduler_state():
+def get_scheduler_state():
     with open(STATE_FILE, "r") as f:
         data = json.load(f)
-    return data.get("schaduler_state", False)
+    return data.get("scheduler_state", False)
 
 
-def set_schaduler_state(value: bool):
+def set_scheduler_state(value: bool):
     with open(STATE_FILE, "r") as f:
         data = json.load(f)
-    data["schaduler_state"] = value
+    data["scheduler_state"] = value
     with open(STATE_FILE, "w") as f:
         json.dump(data, f, indent=4)
