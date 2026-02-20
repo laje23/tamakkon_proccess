@@ -1,9 +1,10 @@
 # services/lecture_service.py
 
 from services.base_service import BaseService
-from utils.response import success_response
+from utils.response import success_response 
 from utils.media import file_id_to_bynery
-from models import media_model
+from models.media_model import MediaTableManager 
+from models.lecture_model import LectureTableManager
 
 
 class LectureService(BaseService):
@@ -11,27 +12,31 @@ class LectureService(BaseService):
         """
         سرویس مدیریت ارسال سخنرانی‌ها
         """
-        super().__init__(db_model=media_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        super().__init__(db_model='', bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        
+    def save_lecture(self ,message):
+        if lectur_id := message.document.id:
+            
+            with MediaTableManager() as db:
+                media_id = db.insert(lectur_id , 'audio')
+            if not media_id :
+                return
+            with LectureTableManager() as db :
+                db.insert(media_id=media_id , caption=str(message.caption))
+            
+            
 
     async def auto_send(self):
-        """
-        ارسال خودکار یک سخنرانی به کانال‌های بله و ایتا
-        """
-        lecture = self.db.auto_return_lecture()
-        if not lecture:
-            raise Exception("هیچ سخنرانی آماده ارسال نیست")
-
-        id, file_id, caption = lecture
-
-        bin_file = await file_id_to_bynery(file_id, self.bale_bot)
-
-        # اضافه کردن کپشن اختصاصی
-        caption = (caption or "") + "\n\n#سخنرانی\n@tamakkon_ir"
-
-        # ارسال هم‌زمان با متد پایه
-        await self.send_media("audio", bin_file, caption)
-
-        # آپدیت وضعیت
-        self.db.mark_lecture_sent(id)
-
-        return success_response(f"سخنرانی با شناسه {id} ارسال شد")
+        with LectureTableManager() as db :
+            audio = db.get_one_unsent()
+            if not audio:
+                return success_response('پیامی برای ارسال وجود ندارد')
+            id, caption, sent, file_id = audio
+            caption = (caption or "") + "\n\n#سخنرانی\n@tamakkon_ir"
+            bin_file = await file_id_to_bynery(file_id=file_id , bot =self.bale_bot)
+            try :
+                await self.send_media('audio' , bin_file=bin_file , caption=caption )
+                db.mark_as_sent(id)
+            except :
+                return 'خطا در ازسال سخنرانی'
+            return success_response('ارسال سخنرانی انجام شد ')

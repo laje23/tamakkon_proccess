@@ -3,7 +3,6 @@ from utils.response import success_response
 from utils.media import file_id_to_bynery, get_media_bytes
 from config.channels import bale_channel_id, eitaa_channel_id
 from config.bots import bale_bot, eitaa_bot
-from models import media_model
 from utils.keyboard import back_to_message_menu
 import asyncio
 
@@ -14,7 +13,7 @@ class GeneralService:
         user_temp_data,
         bale_bot=bale_bot,
         eitaa_bot=eitaa_bot,
-        media_model=media_model,
+        media_model='',
     ):
         self.bale_bot = bale_bot
         self.eitaa_bot = eitaa_bot
@@ -45,18 +44,7 @@ class GeneralService:
             self.eitaa_bot.send_message(self.eitaa_channel_id, text),
         )
         return success_response("پیام متنی ارسال شد")
-
-    async def send_prayer(self, prayer_type: str):
-        dict_pr = {"faraj": 1, "ahd": 2, "tohid": 3}
-        id_key = dict_pr[prayer_type]
-        result = self.audio_model.get_file_id_and_caption_by_id(id_key)
-        if not result:
-            raise Exception("ارور در دریافت ایدی صوت از دیتابیس")
-
-        file_id, caption = result
-        await self.send_audio_file(file_id, caption)
-        return success_response("دعا ارسال شد")
-
+    
     async def send_day_info(self):
         day = get_mentioning_day()
         text = (
@@ -92,27 +80,3 @@ class GeneralService:
             await self.send_text_message(text)
             return success_response("پیام ارسال شد")
 
-    #
-    async def save_new_audio(self, message):
-        user_id = message.author.id
-        id = self.user_temp_data[user_id]["audio_id"]
-        if id:
-            if message.document:
-                file_id = message.document.id
-                caption = message.caption or ""
-                self.media_model.update_audio(id, file_id, caption)
-                await self.bale_bot.send_message(
-                    message.chat.id, "با موفقیت تغییر کرد ", back_to_message_menu()
-                )
-                message.author.del_state()
-                self.user_temp_data.pop(user_id, None)
-            else:
-                await self.bale_bot.send_message(
-                    message.chat.id,
-                    "فرمت ارسال شده نامعتبر است",
-                    back_to_message_menu(),
-                )
-        else:
-            await self.bale_bot.send_message(
-                message.chat.id, "مشکلی در دریافت ایدی بود ", back_to_message_menu()
-            )

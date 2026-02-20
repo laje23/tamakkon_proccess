@@ -40,7 +40,7 @@ class NoteService(BaseService):
         # گرفتن یادداشت آماده ارسال
         note = self.db.get_unsent_note()
         if not note:
-            raise Exception("هیچ یادداشتی برای ارسال موجود نیست")
+                return {'message' :'هیچ یادداشتی آماده ارسال نیست '}
 
         text_id, file_id, media_type = note
 

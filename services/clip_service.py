@@ -4,7 +4,8 @@ from services.base_service import BaseService
 from utils.response import success_response, error_response
 from utils.media import file_id_to_bynery
 from utils.keyboard import back_to_message_menu
-from models import media_model
+from models.media_model import MediaTableManager
+from models.clip_model import ClipTableManager
 import asyncio
 
 
@@ -13,7 +14,7 @@ class ClipService(BaseService):
         """
         سرویس مدیریت ارسال کلیپ‌ها
         """
-        super().__init__(db_model=media_model, bale_bot=bale_bot, eitaa_bot=eitaa_bot)
+        super().__init__( db_model='', bale_bot=bale_bot, eitaa_bot=eitaa_bot)
         self.user_temp_data = user_temp_data
         self.MESSAGES = {
             "invalid_number": "❗️ لطفاً فقط عدد مثبت وارد کنید.",
@@ -33,23 +34,24 @@ class ClipService(BaseService):
         """
         ارسال خودکار یک کلیپ به کانال‌های بله و ایتا
         """
-        clip = self.db.auto_return_file_id()
-        if not clip:
-            raise Exception("هیچ کلیپی آماده ارسال نیست")
+        with ClipTableManager() as db :
+            clip = db.get_own_unsent()
+            if not clip:
+                return success_response("هیچ کلیپی آماده نیست")
 
-        id, file_id, caption = clip
+            id, caption, sent ,file_id= clip
 
-        # گرفتن باینری فایل از بات
-        bin_file = await file_id_to_bynery(file_id, self.bale_bot)
+            # گرفتن باینری فایل از بات
+            bin_file = await file_id_to_bynery(file_id, self.bale_bot)
 
-        # اضافه کردن کپشن اختصاصی
-        caption = (caption or "") + "\n\n#کلیپ\n@tamakkon_ir"
+            # اضافه کردن کپشن اختصاصی
+            caption = (caption or "") + "\n\n#کلیپ\n@tamakkon_ir"
 
-        # ارسال هم‌زمان با متد پایه
-        await self.send_media("video", bin_file, caption)
+            # ارسال هم‌زمان با متد پایه
+            await self.send_media("video", bin_file, caption)
 
         # آپدیت وضعیت
-        self.db.mark_clip_sent(id)
+            db.mark_as_sent(id)
 
         return success_response(f"کلیپ با شناسه {id} ارسال شد")
 
@@ -73,8 +75,10 @@ class ClipService(BaseService):
         user_id = message.author.id
         file_id = self.user_temp_data[user_id].get("clip_file_id")
         caption = message.text.strip()
-
-        self.db.save_clip(file_id, caption)
+        with MediaTableManager() as db:
+            media_id = db.insert(file_id , 'video')
+        with ClipTableManager() as db :
+            db.insert(media_id, caption)
         await self.bale_bot.send_message(
             message.chat.id, self.MESSAGES["clip_caption_saved"], back_to_message_menu()
         )
@@ -87,7 +91,8 @@ class ClipService(BaseService):
         id = self.user_temp_data[user_id].get("edit_id")
         new_caption = message.text.strip()
 
-        self.db.edit_clip_caption(id, new_caption)
+        with ClipTableManager() as  db :
+            db.update_caption(id, new_caption)
         await self.bale_bot.send_message(
             message.chat.id, self.MESSAGES["caption_edited"], back_to_message_menu()
         )

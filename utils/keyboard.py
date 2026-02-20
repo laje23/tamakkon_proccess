@@ -36,7 +36,6 @@ def message_menu(user_id):
         [InlineKeyboardButton("ارسال زمانبندی شده", "schedule_message_menu")],
         [InlineKeyboardButton("مسابقات", "qaa_menu")],
         [InlineKeyboardButton("ذخیره و ویرایش", "add_and_edit")],
-        [InlineKeyboardButton("صوت های ارسالی", "change_audio_file_id")],
         [InlineKeyboardButton("دسترسی ها", "back_to_users_list")],
         [InlineKeyboardButton("گرفتن آمار", "get_status")],
         [InlineKeyboardButton("زمانبندی", "schaduler_menu")],

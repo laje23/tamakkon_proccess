@@ -224,12 +224,7 @@ async def collect_group_input(message):
             hadith_model.save_id_and_content(message.id, message.text)
 
         elif message.chat.id == group_reserch_lecture_id:
-            if message.document:
-                media_model.save_lecture(message.document.id, message.caption)
-            else:
-                await send_to_admins(
-                    error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")
-                )
+            lecture_services.save_lecture(message)
 
     except Exception as e:
         await send_to_admins(e)

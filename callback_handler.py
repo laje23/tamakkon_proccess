@@ -53,14 +53,6 @@ async def call_handler(callback_query):
             ci, mi, "لطفا یک گزینه برای ارسال انتخاب کنید", await send_menu(user_id=ui)
         )
 
-    elif t == "change_audio_file_id":
-        await bale_bot.edit_message_text(
-            ci,
-            mi,
-            "یکی را برای تغییر شناسه فایل آن انتخاب کنید ",
-            await audios_menu(user_id=ui),
-        )
-
     # 📝 منوی یادداشت‌ها
     elif t == "note_menu":
         await bale_bot.edit_message_text(
@@ -166,14 +158,6 @@ async def call_handler(callback_query):
         )
         id = t.split(":")[1].strip()
         user_temp_data[ui] = {"audio_id": id}
-
-    elif t == "create_default_audios_row":
-        audio_name_list = ["دعای فرج", "دعای احد", "توحید"]
-        for i in audio_name_list:
-            media_model.insert_audio(str(i), 0000000, "")
-        await bale_bot.edit_message_text(
-            ci, mi, "مقادیر پیشفرض ایجاد شدند", back_to_message_menu()
-        )
 
     elif t == "save_qaa":
         await bale_bot.send_message(
