@@ -1,26 +1,27 @@
 import asyncio
 from datetime import datetime
-from utils.schaduler_utils import get_schaduler_state
+from utils.scheduler_utils import get_scheduler_state
 from utils.notifiter import send_to_admins
 from pytz import timezone
 from config.service_configs import *
 
 
 async def scheduled_messages():
-    sent_today = set()  # برای اینکه یک پیام دوباره در همون دقیقه ارسال نشه
+    sent_today = set()
+
+    auto_send_counter = 0
+    retry_failed_counter = 0
 
     while True:
         iran = timezone("Asia/Tehran")
         now = datetime.now(iran)
         current_time = now.strftime("%H:%M")
-        if get_schaduler_state():
+
+        if get_scheduler_state():
             if current_time not in sent_today:
                 try:
                     if current_time == "06:00":
                         await general_services.send_prayer("ahd")
-
-                    # elif current_time == "07:47":
-                    #     await general_services.send_day_info()
 
                     elif current_time == "09:34":
                         await hadith_services.auto_send()
@@ -47,13 +48,35 @@ async def scheduled_messages():
                         await lecture_services.auto_send()
 
                     sent_today.add(current_time)
+
                 except Exception as e:
                     await send_to_admins(
                         f"[{current_time}] خطا در اجرای برنامه زمان‌بندی:\n{e}"
                     )
 
-            # ریست کردن لیست زمان‌های اجرا شده در روز بعد
             if current_time == "00:00":
                 sent_today.clear()
+
+            # ---------- شمارنده‌ها ----------
+            auto_send_counter += 1
+            retry_failed_counter += 1
+
+            # مثلا هر 10 بار → auto_send
+            if auto_send_counter >= 10:
+                try:
+                    await schedul_message_service.auto_send()
+                except Exception as e:
+                    await send_to_admins(f"[CRON] خطا در auto_send:\n{e}")
+                finally:
+                    auto_send_counter = 0  # ریست
+
+            # مثلا هر 20 بار → retry_failed
+            if retry_failed_counter >= 20:
+                try:
+                    await schedul_message_service.retry_failed()
+                except Exception as e:
+                    await send_to_admins(f"[CRON] خطا در retry_failed:\n{e}")
+                finally:
+                    retry_failed_counter = 0  # ریست
 
         await asyncio.sleep(30)

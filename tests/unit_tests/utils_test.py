@@ -267,40 +267,40 @@ def test_error_response_with_exception():
         assert "ValueError" in result["traceback"]
 
 
-from utils.schaduler_utils import get_schaduler_state, set_schaduler_state
+from utils.scheduler_utils import get_scheduler_state, set_scheduler_state
 
 
-# ---------- تست get_schaduler_state با مقدار True ----------
+# ---------- تست get_scheduler_state با مقدار True ----------
 def test_get_schaduler_state_true():
     mock_data = json.dumps({"schaduler_state": True})
     with patch("builtins.open", mock_open(read_data=mock_data)):
-        result = get_schaduler_state()
+        result = get_scheduler_state()
         assert result is True
 
 
-# ---------- تست get_schaduler_state با مقدار False ----------
+# ---------- تست get_scheduler_state با مقدار False ----------
 def test_get_schaduler_state_false():
     mock_data = json.dumps({"schaduler_state": False})
     with patch("builtins.open", mock_open(read_data=mock_data)):
-        result = get_schaduler_state()
+        result = get_scheduler_state()
         assert result is False
 
 
-# ---------- تست get_schaduler_state بدون کلید ----------
+# ---------- تست get_scheduler_state بدون کلید ----------
 def test_get_schaduler_state_missing_key():
     mock_data = json.dumps({})
     with patch("builtins.open", mock_open(read_data=mock_data)):
-        result = get_schaduler_state()
+        result = get_scheduler_state()
         assert result is False
 
 
-# ---------- تست set_schaduler_state ----------
+# ---------- تست set_scheduler_state ----------
 def test_set_schaduler_state():
     initial_data = json.dumps({"schaduler_state": False})
     m = mock_open(read_data=initial_data)
 
     with patch("builtins.open", m):
-        set_schaduler_state(True)
+        set_scheduler_state(True)
 
     # بررسی اینکه فایل با مقدار جدید نوشته شده
     m.assert_called_with("schaduler_state.json", "w")

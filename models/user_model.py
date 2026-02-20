@@ -51,11 +51,18 @@ class UserTableManager:
     def _add_user(self, user_id, name, phone_number=None):
         return self._execute(
             """
-            INSERT INTO users (user_id, name, phone_number)
-            VALUES (%s, %s, %s)
-            RETURNING id;
+            WITH inserted AS (
+                INSERT INTO users (user_id, name, phone_number)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (user_id) DO NOTHING
+                RETURNING id
+            )
+            SELECT id FROM inserted
+            UNION ALL
+            SELECT id FROM users WHERE user_id = %s
+            LIMIT 1;
             """,
-            (user_id, name, phone_number),
+            (user_id, name, phone_number, user_id),
             fetchone=True,
         )
 

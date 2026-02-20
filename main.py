@@ -1,5 +1,5 @@
 from balethon.conditions import command, group, at_state, private, all
-from models import hadith_model, lectures_model
+from models import hadith_model, media_model
 from config.bots import bale_bot
 from config.admins import admins
 from utils.notifiter import send_to_admins
@@ -7,7 +7,7 @@ from config.channels import group_reserch_hadith_id, group_reserch_lecture_id
 from utils.keyboard import *
 from utils.response import *
 from dotenv import load_dotenv
-from schaduler import scheduled_messages
+from scheduler import scheduled_messages
 from config.service_configs import *
 import threading
 import callback_handler as call
@@ -37,6 +37,8 @@ async def handle_start(message):
         "سلام! یکی از گزینه‌ها رو انتخاب کنید:",
         main_menu(message.author.id),
     )
+    
+
 
 
 # 📝 ذخیره یادداشت
@@ -204,6 +206,16 @@ async def handel_login(message):
     await user_service.insert_user(message.author, message.text)
 
 
+@bale_bot.on_message(at_state("INPUT_TEXT"))
+async def handle_input_text(message):
+    await schedul_message_service.handle_days_send_time(message)
+
+
+@bale_bot.on_message(at_state("INPUT_MEDIA"))
+async def handle_input_media(message):
+    await schedul_message_service.handle_media(message)
+
+
 # 📥 دریافت پیام‌های گروهی
 @bale_bot.on_message(group)
 async def collect_group_input(message):
@@ -212,12 +224,7 @@ async def collect_group_input(message):
             hadith_model.save_id_and_content(message.id, message.text)
 
         elif message.chat.id == group_reserch_lecture_id:
-            if message.document:
-                lectures_model.save_lecture(message.document.id, message.caption)
-            else:
-                await send_to_admins(
-                    error_response("پیام ارسال شده در گروه سخنرانی فرمتی نامعتبر دارد")
-                )
+            lecture_services.save_lecture(message)
 
     except Exception as e:
         await send_to_admins(e)

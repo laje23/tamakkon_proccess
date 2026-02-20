@@ -1,10 +1,8 @@
 jdatetime
 balethon == 1.0.1
 python-dotenv
-schedule
 psycopg2-binary
 pytest
-pymongo
 pytz
 pytest-asyncio
-anyio
+babel

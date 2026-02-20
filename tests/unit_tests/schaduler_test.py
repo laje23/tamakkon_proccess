@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
-from schaduler import scheduled_messages
+from scheduler import scheduled_messages
 
 
 @pytest.mark.asyncio
@@ -22,7 +22,7 @@ async def test_scheduled_messages_calls_prayer_ahd(monkeypatch):
     mock_get_state = MagicMock(return_value=True)
     mock_sleep = AsyncMock(side_effect=Exception("stop"))  # برای توقف حلقه بی‌نهایت
 
-    monkeypatch.setattr("schaduler.get_schaduler_state", mock_get_state)
+    monkeypatch.setattr("schaduler.get_scheduler_state", mock_get_state)
     monkeypatch.setattr(
         "schaduler.general_services", MagicMock(send_prayer=mock_send_prayer)
     )
@@ -60,7 +60,7 @@ async def test_scheduled_messages_handles_exception(monkeypatch):
 
     monkeypatch.setattr("schaduler.hadith_services", MagicMock(auto_send=mock_hadith))
     monkeypatch.setattr("schaduler.send_to_admins", mock_send_to_admins)
-    monkeypatch.setattr("schaduler.get_schaduler_state", mock_get_state)
+    monkeypatch.setattr("schaduler.get_scheduler_state", mock_get_state)
     monkeypatch.setattr("schaduler.asyncio.sleep", mock_sleep)
 
     # --- اجرا ---
@@ -78,7 +78,7 @@ async def test_scheduled_messages_handles_exception(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_scheduled_messages_does_nothing_when_state_off(monkeypatch):
-    """تست: وقتی get_schaduler_state=False هیچ تسکی اجرا نشود"""
+    """تست: وقتی get_scheduler_state=False هیچ تسکی اجرا نشود"""
 
     class FakeDatetime:
         @staticmethod
@@ -93,7 +93,7 @@ async def test_scheduled_messages_does_nothing_when_state_off(monkeypatch):
     mock_send_prayer = AsyncMock()
     mock_sleep = AsyncMock(side_effect=Exception("stop"))
 
-    monkeypatch.setattr("schaduler.get_schaduler_state", mock_get_state)
+    monkeypatch.setattr("schaduler.get_scheduler_state", mock_get_state)
     monkeypatch.setattr(
         "schaduler.general_services", MagicMock(send_prayer=mock_send_prayer)
     )
